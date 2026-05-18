@@ -2,6 +2,9 @@
 
 ## 2026-05-18
 
+- 修复 CloudBase 子路径部署资源加载：
+  - 将 CSS、Phaser 和主脚本引用改为相对路径，兼容 `/FF-gaming-demo/` 这类部署路径。
+  - 解决腾讯云页面只显示原生 HTML、样式和游戏画布不加载的问题。
 - 增加腾讯云 CloudBase 迁移支持：
   - 新增通用静态构建命令 `npm run build:static`，输出目录为 `dist/`。
   - 保留 Vercel 专用构建命令不变，支持 Vercel 和 CloudBase 双平台部署。
