@@ -36,8 +36,8 @@ node scripts/verify-static-app.mjs
 2. 在 Vercel 选择 `Add New Project`。
 3. 导入这个 GitHub 仓库。
 4. Framework 选择 `Other`。
-5. Build Command 填 `node scripts/verify-static-app.mjs`，也可以留空。
-6. Output Directory 填 `.`。
+5. Build Command 使用默认的 `npm run build`。
+6. Output Directory 留空。构建脚本会生成 Vercel Build Output。
 7. 点击 Deploy。
 
 ## 迭代流程

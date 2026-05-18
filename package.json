@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "python3 -m http.server 4173",
-    "build": "node scripts/verify-static-app.mjs"
+    "build": "node scripts/build-vercel-output.mjs",
+    "verify": "node scripts/verify-static-app.mjs"
   }
 }
