@@ -8,6 +8,7 @@ await rm(outputRoot, { recursive: true, force: true });
 await mkdir(staticRoot, { recursive: true });
 
 await cp("index.html", `${staticRoot}/index.html`);
+await cp("CHANGELOG.md", `${staticRoot}/CHANGELOG.md`);
 await cp("src", `${staticRoot}/src`, { recursive: true });
 await cp("public", `${staticRoot}/public`, { recursive: true });
 
