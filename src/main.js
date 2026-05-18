@@ -1,14 +1,14 @@
 const LEVELS = [
-  { id: 1, name: "晨风港", targetScore: 5, pipeSpeed: 205, pipeGap: 190, pipeInterval: 1500, gravity: 1220, fallGravity: 1680, maxFallSpeed: 760, flapVelocity: -300, windPush: 0, movingGates: false, challenge: "穿过 5 道宽风门", reward: "2 秒护盾" },
-  { id: 2, name: "绿塔航线", targetScore: 10, pipeSpeed: 225, pipeGap: 178, pipeInterval: 1430, gravity: 1250, fallGravity: 1760, maxFallSpeed: 790, flapVelocity: -306, windPush: 0, movingGates: false, challenge: "风门略窄，保持节奏", reward: "下一关开局减速" },
-  { id: 3, name: "斜阳峡", targetScore: 15, pipeSpeed: 245, pipeGap: 166, pipeInterval: 1370, gravity: 1280, fallGravity: 1850, maxFallSpeed: 824, flapVelocity: -312, windPush: 0, movingGates: false, challenge: "速度提升，连续穿越", reward: "额外 1 分" },
-  { id: 4, name: "逆流湾", targetScore: 20, pipeSpeed: 265, pipeGap: 158, pipeInterval: 1320, gravity: 1310, fallGravity: 1950, maxFallSpeed: 860, flapVelocity: -318, windPush: -18, movingGates: false, challenge: "逆风轻推，提前修正高度", reward: "2.5 秒护盾" },
-  { id: 5, name: "星桥", targetScore: 25, pipeSpeed: 285, pipeGap: 150, pipeInterval: 1260, gravity: 1340, fallGravity: 2060, maxFallSpeed: 898, flapVelocity: -324, windPush: 0, movingGates: true, challenge: "部分风门上下浮动", reward: "稳定翼，下一关重力降低" },
-  { id: 6, name: "雾岭", targetScore: 30, pipeSpeed: 305, pipeGap: 142, pipeInterval: 1210, gravity: 1370, fallGravity: 2180, maxFallSpeed: 938, flapVelocity: -330, windPush: 22, movingGates: true, challenge: "顺风扰动，门距继续收紧", reward: "额外 2 分" },
-  { id: 7, name: "高压航道", targetScore: 35, pipeSpeed: 325, pipeGap: 135, pipeInterval: 1160, gravity: 1410, fallGravity: 2310, maxFallSpeed: 980, flapVelocity: -336, windPush: 0, movingGates: true, challenge: "高速浮动风门", reward: "3 秒护盾" },
-  { id: 8, name: "晶脉裂谷", targetScore: 40, pipeSpeed: 345, pipeGap: 128, pipeInterval: 1110, gravity: 1450, fallGravity: 2450, maxFallSpeed: 1024, flapVelocity: -342, windPush: -26, movingGates: true, challenge: "高速逆风，容错降低", reward: "下一关开局减速" },
-  { id: 9, name: "雷鸣门", targetScore: 45, pipeSpeed: 365, pipeGap: 122, pipeInterval: 1060, gravity: 1490, fallGravity: 2600, maxFallSpeed: 1072, flapVelocity: -348, windPush: 28, movingGates: true, challenge: "强风与窄门同时出现", reward: "最终关额外护盾" },
-  { id: 10, name: "天穹终点", targetScore: 52, pipeSpeed: 390, pipeGap: 116, pipeInterval: 1000, gravity: 1530, fallGravity: 2760, maxFallSpeed: 1124, flapVelocity: -354, windPush: 0, movingGates: true, challenge: "最快、最窄、浮动最多", reward: "天穹完赛徽章" }
+  { id: 1, name: "晨风港", targetScore: 5, pipeSpeed: 185, pipeGap: 228, pipeInterval: 1680, gravity: 1180, fallGravity: 1600, maxFallSpeed: 720, flapVelocity: -302, maxStep: 62, windPush: 0, movingGates: false, challenge: "穿过 5 道宽风门", reward: "2 秒护盾" },
+  { id: 2, name: "绿塔航线", targetScore: 10, pipeSpeed: 198, pipeGap: 216, pipeInterval: 1620, gravity: 1200, fallGravity: 1660, maxFallSpeed: 742, flapVelocity: -306, maxStep: 66, windPush: 0, movingGates: false, challenge: "风门略窄，保持节奏", reward: "下一关开局减速" },
+  { id: 3, name: "斜阳峡", targetScore: 15, pipeSpeed: 212, pipeGap: 204, pipeInterval: 1560, gravity: 1225, fallGravity: 1735, maxFallSpeed: 768, flapVelocity: -310, maxStep: 72, windPush: 0, movingGates: false, challenge: "速度提升，连续穿越", reward: "额外 1 分" },
+  { id: 4, name: "逆流湾", targetScore: 20, pipeSpeed: 228, pipeGap: 194, pipeInterval: 1500, gravity: 1250, fallGravity: 1820, maxFallSpeed: 798, flapVelocity: -314, maxStep: 78, windPush: -10, movingGates: false, challenge: "逆风轻推，提前修正高度", reward: "2.5 秒护盾" },
+  { id: 5, name: "星桥", targetScore: 25, pipeSpeed: 246, pipeGap: 184, pipeInterval: 1440, gravity: 1280, fallGravity: 1920, maxFallSpeed: 832, flapVelocity: -320, maxStep: 84, windPush: 0, movingGates: true, challenge: "部分风门上下浮动", reward: "稳定翼，下一关重力降低" },
+  { id: 6, name: "雾岭", targetScore: 30, pipeSpeed: 264, pipeGap: 174, pipeInterval: 1380, gravity: 1310, fallGravity: 2030, maxFallSpeed: 870, flapVelocity: -326, maxStep: 90, windPush: 12, movingGates: true, challenge: "顺风扰动，门距继续收紧", reward: "额外 2 分" },
+  { id: 7, name: "高压航道", targetScore: 35, pipeSpeed: 284, pipeGap: 164, pipeInterval: 1320, gravity: 1345, fallGravity: 2160, maxFallSpeed: 912, flapVelocity: -332, maxStep: 96, windPush: 0, movingGates: true, challenge: "高速浮动风门", reward: "3 秒护盾" },
+  { id: 8, name: "晶脉裂谷", targetScore: 40, pipeSpeed: 306, pipeGap: 154, pipeInterval: 1260, gravity: 1385, fallGravity: 2310, maxFallSpeed: 958, flapVelocity: -338, maxStep: 102, windPush: -16, movingGates: true, challenge: "高速逆风，容错降低", reward: "下一关开局减速" },
+  { id: 9, name: "雷鸣门", targetScore: 45, pipeSpeed: 330, pipeGap: 144, pipeInterval: 1200, gravity: 1430, fallGravity: 2480, maxFallSpeed: 1008, flapVelocity: -344, maxStep: 108, windPush: 18, movingGates: true, challenge: "强风与窄门同时出现", reward: "最终关额外护盾" },
+  { id: 10, name: "天穹终点", targetScore: 52, pipeSpeed: 356, pipeGap: 136, pipeInterval: 1140, gravity: 1480, fallGravity: 2660, maxFallSpeed: 1064, flapVelocity: -350, maxStep: 114, windPush: 0, movingGates: true, challenge: "最快、最窄、浮动最多", reward: "天穹完赛徽章" }
 ];
 
 const THEMES = [
@@ -122,6 +122,7 @@ class FlappyQuestScene extends Phaser.Scene {
     this.flapLiftUntil = 0;
     this.lastFlapAt = 0;
     this.flapBoostUntil = 0;
+    this.lastGapCenter = 0;
   }
 
   create() {
@@ -193,6 +194,7 @@ class FlappyQuestScene extends Phaser.Scene {
     this.flapLiftUntil = 0;
     this.lastFlapAt = 0;
     this.flapBoostUntil = 0;
+    this.lastGapCenter = 0;
     this.resetBirdVisuals();
     this.bird.setPosition(this.scale.width * 0.32, this.scale.height * 0.48);
     this.emitHud();
@@ -334,6 +336,7 @@ class FlappyQuestScene extends Phaser.Scene {
     this.flapLiftUntil = 0;
     this.lastFlapAt = 0;
     this.flapBoostUntil = 0;
+    this.lastGapCenter = 0;
     this.resetBirdVisuals();
     this.bird.setPosition(this.scale.width * 0.32, this.scale.height * 0.48);
     this.showLevelMessage(this.currentLevel(), true);
@@ -371,7 +374,14 @@ class FlappyQuestScene extends Phaser.Scene {
     const { width, height } = this.scale;
     const minTop = 94;
     const maxBottom = height - 122;
-    const gapCenter = Phaser.Math.Between(minTop + level.pipeGap / 2, maxBottom - level.pipeGap / 2);
+    const minCenter = minTop + level.pipeGap / 2;
+    const maxCenter = maxBottom - level.pipeGap / 2;
+    const previousCenter = this.lastGapCenter || Phaser.Math.Clamp(this.bird.y, minCenter, maxCenter);
+    const step = level.maxStep ?? 80;
+    const low = Math.max(minCenter, previousCenter - step);
+    const high = Math.min(maxCenter, previousCenter + step);
+    const gapCenter = Phaser.Math.Between(Math.round(low), Math.round(high));
+    this.lastGapCenter = gapCenter;
     const pipeWidth = 70;
     const topHeight = gapCenter - level.pipeGap / 2;
     const bottomY = gapCenter + level.pipeGap / 2;
