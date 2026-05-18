@@ -1,14 +1,22 @@
 const LEVELS = [
-  { id: 1, name: "晨风港", targetScore: 5, pipeSpeed: 205, pipeGap: 190, pipeInterval: 1500, gravity: 760, flapVelocity: -325, windPush: 0, movingGates: false, challenge: "穿过 5 道宽风门", reward: "2 秒护盾" },
-  { id: 2, name: "绿塔航线", targetScore: 10, pipeSpeed: 225, pipeGap: 178, pipeInterval: 1430, gravity: 785, flapVelocity: -332, windPush: 0, movingGates: false, challenge: "风门略窄，保持节奏", reward: "下一关开局减速" },
-  { id: 3, name: "斜阳峡", targetScore: 15, pipeSpeed: 245, pipeGap: 166, pipeInterval: 1370, gravity: 810, flapVelocity: -340, windPush: 0, movingGates: false, challenge: "速度提升，连续穿越", reward: "额外 1 分" },
-  { id: 4, name: "逆流湾", targetScore: 20, pipeSpeed: 265, pipeGap: 158, pipeInterval: 1320, gravity: 835, flapVelocity: -348, windPush: -18, movingGates: false, challenge: "逆风轻推，提前修正高度", reward: "2.5 秒护盾" },
-  { id: 5, name: "星桥", targetScore: 25, pipeSpeed: 285, pipeGap: 150, pipeInterval: 1260, gravity: 858, flapVelocity: -356, windPush: 0, movingGates: true, challenge: "部分风门上下浮动", reward: "稳定翼，下一关重力降低" },
-  { id: 6, name: "雾岭", targetScore: 30, pipeSpeed: 305, pipeGap: 142, pipeInterval: 1210, gravity: 872, flapVelocity: -363, windPush: 22, movingGates: true, challenge: "顺风扰动，门距继续收紧", reward: "额外 2 分" },
-  { id: 7, name: "高压航道", targetScore: 35, pipeSpeed: 325, pipeGap: 135, pipeInterval: 1160, gravity: 902, flapVelocity: -370, windPush: 0, movingGates: true, challenge: "高速浮动风门", reward: "3 秒护盾" },
-  { id: 8, name: "晶脉裂谷", targetScore: 40, pipeSpeed: 345, pipeGap: 128, pipeInterval: 1110, gravity: 930, flapVelocity: -378, windPush: -26, movingGates: true, challenge: "高速逆风，容错降低", reward: "下一关开局减速" },
-  { id: 9, name: "雷鸣门", targetScore: 45, pipeSpeed: 365, pipeGap: 122, pipeInterval: 1060, gravity: 965, flapVelocity: -386, windPush: 28, movingGates: true, challenge: "强风与窄门同时出现", reward: "最终关额外护盾" },
-  { id: 10, name: "天穹终点", targetScore: 52, pipeSpeed: 390, pipeGap: 116, pipeInterval: 1000, gravity: 995, flapVelocity: -395, windPush: 0, movingGates: true, challenge: "最快、最窄、浮动最多", reward: "天穹完赛徽章" }
+  { id: 1, name: "晨风港", targetScore: 5, pipeSpeed: 205, pipeGap: 190, pipeInterval: 1500, gravity: 760, fallGravity: 1030, maxFallSpeed: 510, flapVelocity: -325, windPush: 0, movingGates: false, challenge: "穿过 5 道宽风门", reward: "2 秒护盾" },
+  { id: 2, name: "绿塔航线", targetScore: 10, pipeSpeed: 225, pipeGap: 178, pipeInterval: 1430, gravity: 785, fallGravity: 1080, maxFallSpeed: 535, flapVelocity: -332, windPush: 0, movingGates: false, challenge: "风门略窄，保持节奏", reward: "下一关开局减速" },
+  { id: 3, name: "斜阳峡", targetScore: 15, pipeSpeed: 245, pipeGap: 166, pipeInterval: 1370, gravity: 810, fallGravity: 1140, maxFallSpeed: 560, flapVelocity: -340, windPush: 0, movingGates: false, challenge: "速度提升，连续穿越", reward: "额外 1 分" },
+  { id: 4, name: "逆流湾", targetScore: 20, pipeSpeed: 265, pipeGap: 158, pipeInterval: 1320, gravity: 835, fallGravity: 1200, maxFallSpeed: 585, flapVelocity: -348, windPush: -18, movingGates: false, challenge: "逆风轻推，提前修正高度", reward: "2.5 秒护盾" },
+  { id: 5, name: "星桥", targetScore: 25, pipeSpeed: 285, pipeGap: 150, pipeInterval: 1260, gravity: 858, fallGravity: 1260, maxFallSpeed: 615, flapVelocity: -356, windPush: 0, movingGates: true, challenge: "部分风门上下浮动", reward: "稳定翼，下一关重力降低" },
+  { id: 6, name: "雾岭", targetScore: 30, pipeSpeed: 305, pipeGap: 142, pipeInterval: 1210, gravity: 872, fallGravity: 1310, maxFallSpeed: 640, flapVelocity: -363, windPush: 22, movingGates: true, challenge: "顺风扰动，门距继续收紧", reward: "额外 2 分" },
+  { id: 7, name: "高压航道", targetScore: 35, pipeSpeed: 325, pipeGap: 135, pipeInterval: 1160, gravity: 902, fallGravity: 1370, maxFallSpeed: 670, flapVelocity: -370, windPush: 0, movingGates: true, challenge: "高速浮动风门", reward: "3 秒护盾" },
+  { id: 8, name: "晶脉裂谷", targetScore: 40, pipeSpeed: 345, pipeGap: 128, pipeInterval: 1110, gravity: 930, fallGravity: 1440, maxFallSpeed: 700, flapVelocity: -378, windPush: -26, movingGates: true, challenge: "高速逆风，容错降低", reward: "下一关开局减速" },
+  { id: 9, name: "雷鸣门", targetScore: 45, pipeSpeed: 365, pipeGap: 122, pipeInterval: 1060, gravity: 965, fallGravity: 1510, maxFallSpeed: 735, flapVelocity: -386, windPush: 28, movingGates: true, challenge: "强风与窄门同时出现", reward: "最终关额外护盾" },
+  { id: 10, name: "天穹终点", targetScore: 52, pipeSpeed: 390, pipeGap: 116, pipeInterval: 1000, gravity: 995, fallGravity: 1590, maxFallSpeed: 770, flapVelocity: -395, windPush: 0, movingGates: true, challenge: "最快、最窄、浮动最多", reward: "天穹完赛徽章" }
+];
+
+const THEMES = [
+  { name: "晨风港", top: 0x163944, bottom: 0x0b1b22, haze: 0x70d4b7, star: 0xf6fbf7, cloud: 0xd8f4ef, gateA: 0x67d8b1, gateB: 0x4ca6d8, ground: 0x20302b, accent: 0xf6d365 },
+  { name: "斜阳峡", top: 0x402a3d, bottom: 0x171725, haze: 0xff9d76, star: 0xffe2ad, cloud: 0xffc18a, gateA: 0xffb45e, gateB: 0xd85f71, ground: 0x302421, accent: 0xffdf79 },
+  { name: "星桥", top: 0x172046, bottom: 0x0b1024, haze: 0x7d74ff, star: 0xe8edff, cloud: 0xb7c7ff, gateA: 0x8b7dff, gateB: 0x4fd0ff, ground: 0x1b2444, accent: 0xd9e4ff },
+  { name: "晶脉裂谷", top: 0x1b1734, bottom: 0x08151f, haze: 0x8ee5c0, star: 0xd9fff0, cloud: 0x66a6b5, gateA: 0x52e3c2, gateB: 0x8768ff, ground: 0x172a31, accent: 0xfff09b },
+  { name: "雷鸣天穹", top: 0x241326, bottom: 0x08080f, haze: 0xffe15c, star: 0xffffff, cloud: 0x817f9a, gateA: 0xffd45c, gateB: 0xff4f7e, ground: 0x2a1d2d, accent: 0xffffff }
 ];
 
 const SKINS = {
@@ -131,8 +139,10 @@ class FlappyQuestScene extends Phaser.Scene {
     const level = this.currentLevel();
     const speedScale = this.elapsed < this.slowUntil ? 0.82 : 1;
     const pipeSpeed = level.pipeSpeed * speedScale;
+    const verticalGravity = this.velocityY > 0 ? level.fallGravity : level.gravity;
 
-    this.velocityY += (level.gravity + level.windPush) * delta;
+    this.velocityY += (verticalGravity + level.windPush) * delta;
+    this.velocityY = Phaser.Math.Clamp(this.velocityY, -460, level.maxFallSpeed);
     this.bird.y += this.velocityY * delta;
     this.bird.rotation = Phaser.Math.Clamp(this.velocityY / 520, -0.55, 0.85);
     this.ground.tilePositionX += pipeSpeed * delta;
@@ -233,6 +243,14 @@ class FlappyQuestScene extends Phaser.Scene {
     this.ground = this.add.tileSprite(width / 2, height - 32, width, 64, "__DEFAULT");
     this.ground.setTint(0x20302b);
     this.ground.setAlpha(0.95);
+    this.createThemeLayers();
+  }
+
+  createThemeLayers() {
+    this.themeGraphics = this.add.graphics().setDepth(-20);
+    this.haze = this.add.ellipse(this.scale.width * 0.5, this.scale.height * 0.45, this.scale.width * 0.86, this.scale.height * 0.58, 0xffffff, 0.07).setDepth(-19);
+    this.currentThemeIndex = -1;
+    this.applyTheme(0, true);
   }
 
   createBird() {
@@ -303,6 +321,7 @@ class FlappyQuestScene extends Phaser.Scene {
     this.resetBirdVisuals();
     this.bird.setPosition(this.scale.width * 0.32, this.scale.height * 0.48);
     this.showLevelMessage(this.currentLevel(), true);
+    this.applyTheme(0, true);
   }
 
   flap() {
@@ -326,18 +345,9 @@ class FlappyQuestScene extends Phaser.Scene {
     const topHeight = gapCenter - level.pipeGap / 2;
     const bottomY = gapCenter + level.pipeGap / 2;
     const bottomHeight = height - bottomY - 64;
-    const tint = Phaser.Display.Color.Interpolate.ColorWithColor(
-      Phaser.Display.Color.ValueToColor(0x65d6ad),
-      Phaser.Display.Color.ValueToColor(0x6fa3ff),
-      LEVELS.length,
-      level.id
-    );
-    const color = Phaser.Display.Color.GetColor(tint.r, tint.g, tint.b);
-
-    const top = this.add.rectangle(width + pipeWidth, topHeight / 2, pipeWidth, topHeight, color);
-    const bottom = this.add.rectangle(width + pipeWidth, bottomY + bottomHeight / 2, pipeWidth, bottomHeight, color);
-    top.setStrokeStyle(3, 0xf6fbf7, 0.22);
-    bottom.setStrokeStyle(3, 0xf6fbf7, 0.22);
+    const theme = this.currentTheme();
+    const top = this.createGateSegment(width + pipeWidth, topHeight / 2, pipeWidth, topHeight, theme, true);
+    const bottom = this.createGateSegment(width + pipeWidth, bottomY + bottomHeight / 2, pipeWidth, bottomHeight, theme, false);
 
     if (level.movingGates) {
       const offset = Phaser.Math.Between(12, 32);
@@ -354,6 +364,47 @@ class FlappyQuestScene extends Phaser.Scene {
     this.pipes.push({ top, bottom, scored: false });
   }
 
+  createGateSegment(x, y, width, height, theme, isTop) {
+    const segment = this.add.container(x, y);
+    segment.setSize(width, height);
+    segment.width = width;
+    segment.height = height;
+
+    const body = this.add.rectangle(0, 0, width, height, theme.gateA, 0.96);
+    const inner = this.add.rectangle(0, 0, width - 16, Math.max(12, height - 18), theme.gateB, 0.24);
+    const edge = this.add.rectangle(0, isTop ? height / 2 - 8 : -height / 2 + 8, width + 18, 16, theme.accent, 0.92);
+    const stripe = this.add.rectangle(0, 0, 7, height, 0xffffff, 0.18);
+    const cap = this.add.rectangle(0, isTop ? height / 2 + 3 : -height / 2 - 3, width + 26, 8, 0xffffff, 0.26);
+    const leftRail = this.add.rectangle(-width / 2 + 8, 0, 5, height, 0x071216, 0.25);
+    const rightRail = this.add.rectangle(width / 2 - 8, 0, 5, height, 0x071216, 0.25);
+
+    body.setStrokeStyle(3, 0xf6fbf7, 0.24);
+    edge.setStrokeStyle(2, 0x0b1921, 0.3);
+    segment.add([body, inner, stripe, leftRail, rightRail, edge, cap]);
+
+    const rivetCount = Math.max(2, Math.floor(height / 70));
+    for (let i = 0; i < rivetCount; i += 1) {
+      const offset = -height / 2 + ((i + 1) * height) / (rivetCount + 1);
+      segment.add(this.add.circle(-width / 2 + 18, offset, 4, 0xf6fbf7, 0.36));
+      segment.add(this.add.circle(width / 2 - 18, offset, 4, 0xf6fbf7, 0.36));
+    }
+
+    const ornamentY = isTop ? height / 2 + 22 : -height / 2 - 22;
+    const ornament = this.add.star(0, ornamentY, 6, 5, 13, theme.accent, 0.85);
+    ornament.setStrokeStyle(2, 0x0b1921, 0.35);
+    segment.add(ornament);
+
+    this.tweens.add({
+      targets: ornament,
+      angle: 360,
+      duration: 2400,
+      repeat: -1,
+      ease: "Linear"
+    });
+
+    return segment;
+  }
+
   updatePipes(delta, pipeSpeed) {
     const birdBounds = this.getBirdBounds();
 
@@ -367,8 +418,8 @@ class FlappyQuestScene extends Phaser.Scene {
         this.addScore(1);
       }
 
-      const hitTop = Phaser.Geom.Intersects.RectangleToRectangle(birdBounds, pair.top.getBounds());
-      const hitBottom = Phaser.Geom.Intersects.RectangleToRectangle(birdBounds, pair.bottom.getBounds());
+      const hitTop = Phaser.Geom.Intersects.RectangleToRectangle(birdBounds, this.getSegmentBounds(pair.top));
+      const hitBottom = Phaser.Geom.Intersects.RectangleToRectangle(birdBounds, this.getSegmentBounds(pair.bottom));
       if (hitTop || hitBottom) {
         if (this.elapsed > this.shieldUntil) {
           this.gameOver();
@@ -400,6 +451,7 @@ class FlappyQuestScene extends Phaser.Scene {
     if (this.levelIndex !== previousLevelIndex) {
       this.applyLevelReward(previousLevelIndex);
       this.levelIndex = getLevelForScore(this.score);
+      this.applyTheme(this.levelIndex);
       this.showLevelMessage(this.currentLevel(), false);
     }
 
@@ -529,6 +581,48 @@ class FlappyQuestScene extends Phaser.Scene {
     return LEVELS[this.levelIndex];
   }
 
+  currentTheme() {
+    return THEMES[Math.min(THEMES.length - 1, Math.floor(this.levelIndex / 2))];
+  }
+
+  applyTheme(levelIndex, instant = false) {
+    const themeIndex = Math.min(THEMES.length - 1, Math.floor(levelIndex / 2));
+    if (this.currentThemeIndex === themeIndex && !instant) return;
+
+    this.currentThemeIndex = themeIndex;
+    const theme = THEMES[themeIndex];
+    const width = this.scale.width;
+    const height = this.scale.height;
+
+    this.themeGraphics.clear();
+    this.themeGraphics.fillGradientStyle(theme.top, theme.top, theme.bottom, theme.bottom, 1);
+    this.themeGraphics.fillRect(0, 0, width, height);
+    this.themeGraphics.lineStyle(1, theme.haze, 0.12);
+    for (let i = 0; i < 7; i += 1) {
+      const y = height * (0.22 + i * 0.09);
+      this.themeGraphics.beginPath();
+      this.themeGraphics.moveTo(0, y);
+      this.themeGraphics.lineTo(width, y + Math.sin(i) * 22);
+      this.themeGraphics.strokePath();
+    }
+
+    this.cameras.main.setBackgroundColor(theme.bottom);
+    this.haze.setFillStyle(theme.haze, 0.08);
+    this.ground.setTint(theme.ground);
+    this.stars.children.each((star) => {
+      star.setFillStyle(theme.star, Phaser.Math.FloatBetween(0.22, 0.68));
+      return true;
+    });
+    this.clouds.children.each((cloud) => {
+      cloud.setFillStyle(theme.cloud, Phaser.Math.FloatBetween(0.08, 0.18));
+      return true;
+    });
+
+    if (!instant) {
+      this.cameras.main.flash(260, (theme.haze >> 16) & 255, (theme.haze >> 8) & 255, theme.haze & 255, false);
+    }
+  }
+
   paintBird() {
     if (!this.birdBody || !this.wing || !this.scarf) return;
     const skin = SKINS[selectedSkin];
@@ -567,6 +661,10 @@ class FlappyQuestScene extends Phaser.Scene {
 
   getBirdBounds() {
     return new Phaser.Geom.Rectangle(this.bird.x - 19, this.bird.y - 15, 38, 30);
+  }
+
+  getSegmentBounds(segment) {
+    return new Phaser.Geom.Rectangle(segment.x - segment.width / 2, segment.y - segment.height / 2, segment.width, segment.height);
   }
 
   clearPipes() {

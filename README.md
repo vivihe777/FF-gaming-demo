@@ -50,3 +50,5 @@ node scripts/verify-static-app.mjs
 → git push
 → Vercel 自动生成 Preview/Production 部署
 ```
+
+版本记录见 [CHANGELOG.md](./CHANGELOG.md)。
