@@ -123,6 +123,10 @@ class FlappyQuestScene extends Phaser.Scene {
     this.lastFlapAt = 0;
     this.flapBoostUntil = 0;
     this.lastGapCenter = 0;
+    this.flapPulseUntil = 0;
+    this.nextTrailAt = 0;
+    this.trailCursor = 0;
+    this.shieldStrokeActive = false;
   }
 
   create() {
@@ -164,7 +168,8 @@ class FlappyQuestScene extends Phaser.Scene {
     }
 
     this.updatePipes(delta, pipeSpeed);
-    this.updateTrail();
+    this.updateBirdEffects(delta);
+    this.updateTrail(delta, pipeSpeed);
     this.updateClouds(delta, pipeSpeed);
     this.checkBounds();
   }
@@ -195,6 +200,9 @@ class FlappyQuestScene extends Phaser.Scene {
     this.lastFlapAt = 0;
     this.flapBoostUntil = 0;
     this.lastGapCenter = 0;
+    this.flapPulseUntil = 0;
+    this.nextTrailAt = 0;
+    this.shieldStrokeActive = false;
     this.resetBirdVisuals();
     this.bird.setPosition(this.scale.width * 0.32, this.scale.height * 0.48);
     this.emitHud();
@@ -279,6 +287,7 @@ class FlappyQuestScene extends Phaser.Scene {
 
     this.bird.add([this.scarf, this.wing, this.birdBody, beak, eye]);
     this.paintBird();
+    this.createTrailPool();
 
     this.tweens.add({
       targets: this.wing,
@@ -287,6 +296,17 @@ class FlappyQuestScene extends Phaser.Scene {
       repeat: -1,
       duration: 160,
       ease: "Sine.easeInOut"
+    });
+  }
+
+  createTrailPool() {
+    this.trailDots = Array.from({ length: 18 }, () => this.add.circle(0, 0, 4, 0xffffff, 0).setVisible(false));
+  }
+
+  clearTrailDots() {
+    this.trailDots?.forEach((dot) => {
+      dot.life = 0;
+      dot.setVisible(false);
     });
   }
 
@@ -337,6 +357,9 @@ class FlappyQuestScene extends Phaser.Scene {
     this.lastFlapAt = 0;
     this.flapBoostUntil = 0;
     this.lastGapCenter = 0;
+    this.flapPulseUntil = 0;
+    this.nextTrailAt = 0;
+    this.shieldStrokeActive = false;
     this.resetBirdVisuals();
     this.bird.setPosition(this.scale.width * 0.32, this.scale.height * 0.48);
     this.showLevelMessage(this.currentLevel(), true);
@@ -351,23 +374,8 @@ class FlappyQuestScene extends Phaser.Scene {
     this.bird.rotation = -0.44;
     this.flapLiftUntil = this.elapsed;
     this.flapBoostUntil = this.elapsed + 180;
+    this.flapPulseUntil = this.elapsed + 86;
     this.lastFlapAt = this.elapsed;
-    this.tweens.killTweensOf(this.bird);
-    this.tweens.add({
-      targets: this.bird,
-      scaleX: 1.13,
-      scaleY: 0.86,
-      yoyo: true,
-      duration: 58,
-      ease: "Quad.easeOut"
-    });
-    this.tweens.add({
-      targets: this.wing,
-      scaleY: 0.46,
-      yoyo: true,
-      duration: 58,
-      ease: "Quad.easeOut"
-    });
   }
 
   spawnPipe(level) {
@@ -528,21 +536,48 @@ class FlappyQuestScene extends Phaser.Scene {
     });
   }
 
-  updateTrail() {
+  updateBirdEffects(delta) {
+    const pulse = Phaser.Math.Clamp((this.flapPulseUntil - this.elapsed) / 86, 0, 1);
+    const pulseEase = pulse * pulse;
+    const blend = 1 - Math.pow(0.001, delta);
+    this.bird.scaleX = Phaser.Math.Linear(this.bird.scaleX, 1 + pulseEase * 0.11, blend);
+    this.bird.scaleY = Phaser.Math.Linear(this.bird.scaleY, 1 - pulseEase * 0.12, blend);
+  }
+
+  updateTrail(delta, pipeSpeed) {
     const skin = SKINS[selectedSkin];
-    const dot = this.add.circle(this.bird.x - 24, this.bird.y + Phaser.Math.Between(-9, 9), 4, skin.trail, 0.5);
-    this.tweens.add({
-      targets: dot,
-      x: dot.x - 42,
-      alpha: 0,
-      scale: 0.2,
-      duration: 360,
-      ease: "Sine.easeOut",
-      onComplete: () => dot.destroy()
-    });
+    if (this.elapsed >= this.nextTrailAt) {
+      const dot = this.trailDots[this.trailCursor];
+      this.trailCursor = (this.trailCursor + 1) % this.trailDots.length;
+      dot.life = 0.34;
+      dot.maxLife = 0.34;
+      dot.setPosition(this.bird.x - 24, this.bird.y + Phaser.Math.Between(-9, 9));
+      dot.setFillStyle(skin.trail, 0.5);
+      dot.setScale(1);
+      dot.setAlpha(0.5);
+      dot.setVisible(true);
+      this.nextTrailAt = this.elapsed + 48;
+    }
+
+    for (const dot of this.trailDots) {
+      if (!dot.visible) continue;
+      dot.life -= delta;
+      if (dot.life <= 0) {
+        dot.setVisible(false);
+        continue;
+      }
+
+      const progress = dot.life / dot.maxLife;
+      dot.x -= pipeSpeed * delta * 0.48;
+      dot.setAlpha(0.5 * progress);
+      dot.setScale(0.25 + progress * 0.75);
+    }
 
     const shieldActive = this.elapsed < this.shieldUntil;
-    this.birdBody.setStrokeStyle(shieldActive ? 4 : 0, 0xf6d365, shieldActive ? 0.9 : 0);
+    if (shieldActive !== this.shieldStrokeActive) {
+      this.shieldStrokeActive = shieldActive;
+      this.birdBody.setStrokeStyle(shieldActive ? 4 : 0, 0xf6d365, shieldActive ? 0.9 : 0);
+    }
   }
 
   updateClouds(delta, pipeSpeed) {
@@ -661,6 +696,8 @@ class FlappyQuestScene extends Phaser.Scene {
 
   resetBirdVisuals() {
     this.tweens.killTweensOf(this.bird);
+    this.flapPulseUntil = 0;
+    this.clearTrailDots();
     this.bird.setAlpha(1);
     this.bird.setScale(1);
     this.bird.setRotation(0);
