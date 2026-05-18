@@ -12,11 +12,11 @@ const LEVELS = [
 ];
 
 const THEMES = [
-  { name: "晨风港", top: 0x163944, bottom: 0x0b1b22, haze: 0x70d4b7, star: 0xf6fbf7, cloud: 0xd8f4ef, gateA: 0x67d8b1, gateB: 0x4ca6d8, ground: 0x20302b, accent: 0xf6d365 },
-  { name: "斜阳峡", top: 0x402a3d, bottom: 0x171725, haze: 0xff9d76, star: 0xffe2ad, cloud: 0xffc18a, gateA: 0xffb45e, gateB: 0xd85f71, ground: 0x302421, accent: 0xffdf79 },
-  { name: "星桥", top: 0x172046, bottom: 0x0b1024, haze: 0x7d74ff, star: 0xe8edff, cloud: 0xb7c7ff, gateA: 0x8b7dff, gateB: 0x4fd0ff, ground: 0x1b2444, accent: 0xd9e4ff },
-  { name: "晶脉裂谷", top: 0x1b1734, bottom: 0x08151f, haze: 0x8ee5c0, star: 0xd9fff0, cloud: 0x66a6b5, gateA: 0x52e3c2, gateB: 0x8768ff, ground: 0x172a31, accent: 0xfff09b },
-  { name: "雷鸣天穹", top: 0x241326, bottom: 0x08080f, haze: 0xffe15c, star: 0xffffff, cloud: 0x817f9a, gateA: 0xffd45c, gateB: 0xff4f7e, ground: 0x2a1d2d, accent: 0xffffff }
+  { name: "晨风港", top: 0x163944, bottom: 0x0b1b22, haze: 0x70d4b7, star: 0xf6fbf7, gateA: 0x67d8b1, gateB: 0x4ca6d8, ground: 0x20302b, accent: 0xf6d365 },
+  { name: "斜阳峡", top: 0x402a3d, bottom: 0x171725, haze: 0xff9d76, star: 0xffe2ad, gateA: 0xffb45e, gateB: 0xd85f71, ground: 0x302421, accent: 0xffdf79 },
+  { name: "星桥", top: 0x172046, bottom: 0x0b1024, haze: 0x7d74ff, star: 0xe8edff, gateA: 0x8b7dff, gateB: 0x4fd0ff, ground: 0x1b2444, accent: 0xd9e4ff },
+  { name: "晶脉裂谷", top: 0x1b1734, bottom: 0x08151f, haze: 0x8ee5c0, star: 0xd9fff0, gateA: 0x52e3c2, gateB: 0x8768ff, ground: 0x172a31, accent: 0xfff09b },
+  { name: "雷鸣天穹", top: 0x241326, bottom: 0x08080f, haze: 0xffe15c, star: 0xffffff, gateA: 0xffd45c, gateB: 0xff4f7e, ground: 0x2a1d2d, accent: 0xffffff }
 ];
 
 const SKINS = {
@@ -40,6 +40,26 @@ const skinButtons = [...document.querySelectorAll(".skin-option")];
 
 let selectedSkin = "aurora";
 let scene;
+
+const isMobileViewport = window.matchMedia("(pointer: coarse), (max-width: 760px)").matches;
+const renderResolution = isMobileViewport ? 2 : 1;
+const viewportWidth = window.innerWidth;
+const viewportHeight = window.innerHeight;
+const gameWidth = Math.round(viewportWidth * renderResolution);
+const gameHeight = Math.round(viewportHeight * renderResolution);
+const toRenderValue = (value) => value * renderResolution;
+
+const scaleLevel = (level) => ({
+  ...level,
+  pipeSpeed: toRenderValue(level.pipeSpeed),
+  pipeGap: toRenderValue(level.pipeGap),
+  gravity: toRenderValue(level.gravity),
+  fallGravity: toRenderValue(level.fallGravity),
+  maxFallSpeed: toRenderValue(level.maxFallSpeed),
+  flapVelocity: toRenderValue(level.flapVelocity),
+  maxStep: toRenderValue(level.maxStep),
+  windPush: toRenderValue(level.windPush)
+});
 
 const getLevelForScore = (score) => {
   const index = LEVELS.findIndex((level) => score < level.targetScore);
@@ -153,7 +173,7 @@ class FlappyQuestScene extends Phaser.Scene {
     const liftAssist = 0;
 
     this.velocityY += (verticalGravity + level.windPush - liftAssist) * delta;
-    this.velocityY = Phaser.Math.Clamp(this.velocityY, -430, level.maxFallSpeed);
+    this.velocityY = Phaser.Math.Clamp(this.velocityY, toRenderValue(-430), level.maxFallSpeed);
     this.bird.y += this.velocityY * delta;
     const targetRotation =
       this.velocityY < 0
@@ -170,7 +190,6 @@ class FlappyQuestScene extends Phaser.Scene {
     this.updatePipes(delta, pipeSpeed);
     this.updateBirdEffects(delta);
     this.updateTrail(delta, pipeSpeed);
-    this.updateClouds(delta, pipeSpeed);
     this.checkBounds();
   }
 
@@ -242,28 +261,15 @@ class FlappyQuestScene extends Phaser.Scene {
       this.stars.add(
         this.add.circle(
           Phaser.Math.Between(0, width),
-          Phaser.Math.Between(35, height - 110),
-          Phaser.Math.FloatBetween(0.8, 2.2),
+          Phaser.Math.Between(toRenderValue(35), height - toRenderValue(110)),
+          Phaser.Math.FloatBetween(toRenderValue(0.8), toRenderValue(2.2)),
           0xf6fbf7,
           Phaser.Math.FloatBetween(0.18, 0.55)
         )
       );
     }
 
-    this.clouds = this.add.group();
-    for (let i = 0; i < 9; i += 1) {
-      const cloud = this.add.ellipse(
-        Phaser.Math.Between(0, width),
-        Phaser.Math.Between(90, Math.max(110, height - 180)),
-        Phaser.Math.Between(70, 150),
-        Phaser.Math.Between(20, 42),
-        0xffffff,
-        Phaser.Math.FloatBetween(0.08, 0.16)
-      );
-      this.clouds.add(cloud);
-    }
-
-    this.ground = this.add.tileSprite(width / 2, height - 32, width, 64, "__DEFAULT");
+    this.ground = this.add.tileSprite(width / 2, height - toRenderValue(32), width, toRenderValue(64), "__DEFAULT");
     this.ground.setTint(0x20302b);
     this.ground.setAlpha(0.95);
     this.createThemeLayers();
@@ -271,7 +277,6 @@ class FlappyQuestScene extends Phaser.Scene {
 
   createThemeLayers() {
     this.themeGraphics = this.add.graphics().setDepth(-20);
-    this.haze = this.add.ellipse(this.scale.width * 0.5, this.scale.height * 0.45, this.scale.width * 0.86, this.scale.height * 0.58, 0xffffff, 0.07).setDepth(-19);
     this.currentThemeIndex = -1;
     this.applyTheme(0, true);
   }
@@ -279,11 +284,21 @@ class FlappyQuestScene extends Phaser.Scene {
   createBird() {
     const { width, height } = this.scale;
     this.bird = this.add.container(width * 0.32, height * 0.48);
-    this.birdBody = this.add.ellipse(0, 0, 46, 36, 0xffffff);
-    this.wing = this.add.triangle(-4, 3, 0, 0, -24, 15, 7, 24, 0xffffff);
-    this.scarf = this.add.rectangle(-18, -15, 22, 6, 0xffffff);
-    const eye = this.add.circle(14, -7, 4, 0x0b1921);
-    const beak = this.add.triangle(28, 0, 0, 0, 18, 7, 0, 14, 0xf6d365);
+    this.birdBody = this.add.ellipse(0, 0, toRenderValue(46), toRenderValue(36), 0xffffff);
+    this.wing = this.add.triangle(
+      toRenderValue(-4),
+      toRenderValue(3),
+      0,
+      0,
+      toRenderValue(-24),
+      toRenderValue(15),
+      toRenderValue(7),
+      toRenderValue(24),
+      0xffffff
+    );
+    this.scarf = this.add.rectangle(toRenderValue(-18), toRenderValue(-15), toRenderValue(22), toRenderValue(6), 0xffffff);
+    const eye = this.add.circle(toRenderValue(14), toRenderValue(-7), toRenderValue(4), 0x0b1921);
+    const beak = this.add.triangle(toRenderValue(28), 0, 0, 0, toRenderValue(18), toRenderValue(7), 0, toRenderValue(14), 0xf6d365);
 
     this.bird.add([this.scarf, this.wing, this.birdBody, beak, eye]);
     this.paintBird();
@@ -300,7 +315,7 @@ class FlappyQuestScene extends Phaser.Scene {
   }
 
   createTrailPool() {
-    this.trailDots = Array.from({ length: 18 }, () => this.add.circle(0, 0, 4, 0xffffff, 0).setVisible(false));
+    this.trailDots = Array.from({ length: 18 }, () => this.add.circle(0, 0, toRenderValue(4), 0xffffff, 0).setVisible(false));
   }
 
   clearTrailDots() {
@@ -312,35 +327,37 @@ class FlappyQuestScene extends Phaser.Scene {
 
   createFloatingText() {
     this.levelText = this.add
-      .text(this.scale.width / 2, 116, "", {
+      .text(this.scale.width / 2, toRenderValue(116), "", {
         fontFamily: "Inter, system-ui, sans-serif",
-        fontSize: "28px",
+        fontSize: `${toRenderValue(28)}px`,
         color: "#f6fbf7",
         stroke: "#0b1921",
-        strokeThickness: 4
+        strokeThickness: toRenderValue(4)
       })
       .setOrigin(0.5)
       .setAlpha(0);
 
     this.rewardPopText = this.add
-      .text(this.scale.width / 2, 154, "", {
+      .text(this.scale.width / 2, toRenderValue(154), "", {
         fontFamily: "Inter, system-ui, sans-serif",
-        fontSize: "16px",
+        fontSize: `${toRenderValue(16)}px`,
         color: "#f6d365",
         stroke: "#0b1921",
-        strokeThickness: 3
+        strokeThickness: toRenderValue(3)
       })
       .setOrigin(0.5)
       .setAlpha(0);
   }
 
   bindInput() {
-    this.input.on("pointerdown", () => {
-      if (this.status === "playing") this.flap();
+    this.input.on("pointerdown", (pointer) => {
+      pointer.event?.preventDefault?.();
+      this.tryFlap();
     });
-    this.input.keyboard?.on("keydown-SPACE", () => {
-      if (this.status === "playing") this.flap();
-    });
+  }
+
+  tryFlap() {
+    if (this.status === "playing") this.flap();
   }
 
   resetGame() {
@@ -369,8 +386,8 @@ class FlappyQuestScene extends Phaser.Scene {
   flap() {
     const level = this.currentLevel();
     const rapidTap = this.elapsed - this.lastFlapAt < 145;
-    const fallingRecovery = this.velocityY > 0 ? Phaser.Math.Clamp(this.velocityY * 0.055, 0, 20) : 0;
-    this.velocityY = Math.max(-370, level.flapVelocity - fallingRecovery - (rapidTap ? 2 : 0));
+    const fallingRecovery = this.velocityY > 0 ? Phaser.Math.Clamp(this.velocityY * 0.055, 0, toRenderValue(20)) : 0;
+    this.velocityY = Math.max(toRenderValue(-370), level.flapVelocity - fallingRecovery - (rapidTap ? toRenderValue(2) : 0));
     this.bird.rotation = -0.44;
     this.flapLiftUntil = this.elapsed;
     this.flapBoostUntil = this.elapsed + 180;
@@ -380,26 +397,26 @@ class FlappyQuestScene extends Phaser.Scene {
 
   spawnPipe(level) {
     const { width, height } = this.scale;
-    const minTop = 94;
-    const maxBottom = height - 122;
+    const minTop = toRenderValue(94);
+    const maxBottom = height - toRenderValue(122);
     const minCenter = minTop + level.pipeGap / 2;
     const maxCenter = maxBottom - level.pipeGap / 2;
     const previousCenter = this.lastGapCenter || Phaser.Math.Clamp(this.bird.y, minCenter, maxCenter);
-    const step = level.maxStep ?? 80;
+    const step = level.maxStep ?? toRenderValue(80);
     const low = Math.max(minCenter, previousCenter - step);
     const high = Math.min(maxCenter, previousCenter + step);
     const gapCenter = Phaser.Math.Between(Math.round(low), Math.round(high));
     this.lastGapCenter = gapCenter;
-    const pipeWidth = 70;
+    const pipeWidth = toRenderValue(70);
     const topHeight = gapCenter - level.pipeGap / 2;
     const bottomY = gapCenter + level.pipeGap / 2;
-    const bottomHeight = height - bottomY - 64;
+    const bottomHeight = height - bottomY - toRenderValue(64);
     const theme = this.currentTheme();
     const top = this.createGateSegment(width + pipeWidth, topHeight / 2, pipeWidth, topHeight, theme, true);
     const bottom = this.createGateSegment(width + pipeWidth, bottomY + bottomHeight / 2, pipeWidth, bottomHeight, theme, false);
 
     if (level.movingGates) {
-      const offset = Phaser.Math.Between(12, 32);
+      const offset = Phaser.Math.Between(toRenderValue(12), toRenderValue(32));
       this.tweens.add({
         targets: [top, bottom],
         y: `+=${offset}`,
@@ -420,22 +437,22 @@ class FlappyQuestScene extends Phaser.Scene {
     segment.height = height;
 
     const body = this.add.rectangle(0, 0, width, height, theme.gateA, 0.96);
-    const inner = this.add.rectangle(0, 0, width - 16, Math.max(12, height - 18), theme.gateB, 0.24);
-    const edge = this.add.rectangle(0, isTop ? height / 2 - 8 : -height / 2 + 8, width + 18, 16, theme.accent, 0.92);
-    const stripe = this.add.rectangle(0, 0, 7, height, 0xffffff, 0.18);
-    const cap = this.add.rectangle(0, isTop ? height / 2 + 3 : -height / 2 - 3, width + 26, 8, 0xffffff, 0.26);
-    const leftRail = this.add.rectangle(-width / 2 + 8, 0, 5, height, 0x071216, 0.25);
-    const rightRail = this.add.rectangle(width / 2 - 8, 0, 5, height, 0x071216, 0.25);
+    const inner = this.add.rectangle(0, 0, width - toRenderValue(16), Math.max(toRenderValue(12), height - toRenderValue(18)), theme.gateB, 0.24);
+    const edge = this.add.rectangle(0, isTop ? height / 2 - toRenderValue(8) : -height / 2 + toRenderValue(8), width + toRenderValue(18), toRenderValue(16), theme.accent, 0.92);
+    const stripe = this.add.rectangle(0, 0, toRenderValue(7), height, 0xffffff, 0.18);
+    const cap = this.add.rectangle(0, isTop ? height / 2 + toRenderValue(3) : -height / 2 - toRenderValue(3), width + toRenderValue(26), toRenderValue(8), 0xffffff, 0.26);
+    const leftRail = this.add.rectangle(-width / 2 + toRenderValue(8), 0, toRenderValue(5), height, 0x071216, 0.25);
+    const rightRail = this.add.rectangle(width / 2 - toRenderValue(8), 0, toRenderValue(5), height, 0x071216, 0.25);
 
-    body.setStrokeStyle(3, 0xf6fbf7, 0.24);
-    edge.setStrokeStyle(2, 0x0b1921, 0.3);
+    body.setStrokeStyle(toRenderValue(3), 0xf6fbf7, 0.24);
+    edge.setStrokeStyle(toRenderValue(2), 0x0b1921, 0.3);
     segment.add([body, inner, stripe, leftRail, rightRail, edge, cap]);
 
-    const rivetCount = Math.max(2, Math.floor(height / 70));
+    const rivetCount = Math.max(2, Math.floor(height / toRenderValue(70)));
     for (let i = 0; i < rivetCount; i += 1) {
       const offset = -height / 2 + ((i + 1) * height) / (rivetCount + 1);
-      segment.add(this.add.circle(-width / 2 + 18, offset, 4, 0xf6fbf7, 0.36));
-      segment.add(this.add.circle(width / 2 - 18, offset, 4, 0xf6fbf7, 0.36));
+      segment.add(this.add.circle(-width / 2 + toRenderValue(18), offset, toRenderValue(4), 0xf6fbf7, 0.36));
+      segment.add(this.add.circle(width / 2 - toRenderValue(18), offset, toRenderValue(4), 0xf6fbf7, 0.36));
     }
 
     return segment;
@@ -449,7 +466,7 @@ class FlappyQuestScene extends Phaser.Scene {
       pair.top.x -= pipeSpeed * delta;
       pair.bottom.x -= pipeSpeed * delta;
 
-      if (!pair.scored && pair.top.x + pair.top.width / 2 < this.bird.x - 20) {
+      if (!pair.scored && pair.top.x + pair.top.width / 2 < this.bird.x - toRenderValue(20)) {
         pair.scored = true;
         this.addScore(1);
       }
@@ -466,7 +483,7 @@ class FlappyQuestScene extends Phaser.Scene {
         return;
       }
 
-      if (pair.top.x < -90) {
+      if (pair.top.x < toRenderValue(-90)) {
         pair.top.destroy();
         pair.bottom.destroy();
         this.pipes.splice(i, 1);
@@ -509,8 +526,8 @@ class FlappyQuestScene extends Phaser.Scene {
   showLevelMessage(level, instant) {
     this.levelText.setText(`第 ${level.id} 关：${level.name}`);
     this.rewardPopText.setText(level.challenge);
-    this.levelText.setPosition(this.scale.width / 2, 116);
-    this.rewardPopText.setPosition(this.scale.width / 2, 154);
+    this.levelText.setPosition(this.scale.width / 2, toRenderValue(116));
+    this.rewardPopText.setPosition(this.scale.width / 2, toRenderValue(154));
 
     if (instant) {
       this.levelText.setAlpha(1);
@@ -521,7 +538,7 @@ class FlappyQuestScene extends Phaser.Scene {
     this.tweens.add({
       targets: [this.levelText, this.rewardPopText],
       alpha: 1,
-      y: "-=8",
+      y: `-=${toRenderValue(8)}`,
       duration: 180,
       ease: "Sine.easeOut",
       onComplete: () => {
@@ -551,7 +568,7 @@ class FlappyQuestScene extends Phaser.Scene {
       this.trailCursor = (this.trailCursor + 1) % this.trailDots.length;
       dot.life = 0.34;
       dot.maxLife = 0.34;
-      dot.setPosition(this.bird.x - 24, this.bird.y + Phaser.Math.Between(-9, 9));
+      dot.setPosition(this.bird.x - toRenderValue(24), this.bird.y + Phaser.Math.Between(toRenderValue(-9), toRenderValue(9)));
       dot.setFillStyle(skin.trail, 0.5);
       dot.setScale(1);
       dot.setAlpha(0.5);
@@ -580,23 +597,12 @@ class FlappyQuestScene extends Phaser.Scene {
     }
   }
 
-  updateClouds(delta, pipeSpeed) {
-    this.clouds.children.each((cloud) => {
-      cloud.x -= pipeSpeed * delta * 0.12;
-      if (cloud.x < -100) {
-        cloud.x = this.scale.width + 120;
-        cloud.y = Phaser.Math.Between(90, Math.max(110, this.scale.height - 180));
-      }
-      return true;
-    });
-  }
-
   checkBounds() {
-    if (this.bird.y < 34 || this.bird.y > this.scale.height - 74) {
+    if (this.bird.y < toRenderValue(34) || this.bird.y > this.scale.height - toRenderValue(74)) {
       if (this.elapsed > this.shieldUntil) {
         this.gameOver();
       } else {
-        this.bird.y = Phaser.Math.Clamp(this.bird.y, 38, this.scale.height - 80);
+        this.bird.y = Phaser.Math.Clamp(this.bird.y, toRenderValue(38), this.scale.height - toRenderValue(80));
         this.velocityY *= -0.25;
       }
     }
@@ -641,7 +647,7 @@ class FlappyQuestScene extends Phaser.Scene {
   }
 
   currentLevel() {
-    return LEVELS[this.levelIndex];
+    return scaleLevel(LEVELS[this.levelIndex]);
   }
 
   currentTheme() {
@@ -660,24 +666,11 @@ class FlappyQuestScene extends Phaser.Scene {
     this.themeGraphics.clear();
     this.themeGraphics.fillGradientStyle(theme.top, theme.top, theme.bottom, theme.bottom, 1);
     this.themeGraphics.fillRect(0, 0, width, height);
-    this.themeGraphics.lineStyle(1, theme.haze, 0.12);
-    for (let i = 0; i < 7; i += 1) {
-      const y = height * (0.22 + i * 0.09);
-      this.themeGraphics.beginPath();
-      this.themeGraphics.moveTo(0, y);
-      this.themeGraphics.lineTo(width, y + Math.sin(i) * 22);
-      this.themeGraphics.strokePath();
-    }
 
     this.cameras.main.setBackgroundColor(theme.bottom);
-    this.haze.setFillStyle(theme.haze, 0.08);
     this.ground.setTint(theme.ground);
     this.stars.children.each((star) => {
       star.setFillStyle(theme.star, Phaser.Math.FloatBetween(0.22, 0.68));
-      return true;
-    });
-    this.clouds.children.each((cloud) => {
-      cloud.setFillStyle(theme.cloud, Phaser.Math.FloatBetween(0.08, 0.18));
       return true;
     });
 
@@ -709,9 +702,9 @@ class FlappyQuestScene extends Phaser.Scene {
     if (this.elapsed < this.crashUntil) return;
 
     this.crashUntil = this.elapsed + 420;
-    const pushBack = Math.max(48, pair.top.width * 0.75);
-    this.bird.x = Math.max(42, pair.top.x - pushBack);
-    this.velocityY = hitTop ? 230 : -260;
+    const pushBack = Math.max(toRenderValue(48), pair.top.width * 0.75);
+    this.bird.x = Math.max(toRenderValue(42), pair.top.x - pushBack);
+    this.velocityY = hitTop ? toRenderValue(230) : toRenderValue(-260);
     this.cameras.main.shake(90, 0.003);
 
     this.tweens.add({
@@ -725,7 +718,7 @@ class FlappyQuestScene extends Phaser.Scene {
   }
 
   getBirdBounds() {
-    return new Phaser.Geom.Rectangle(this.bird.x - 19, this.bird.y - 15, 38, 30);
+    return new Phaser.Geom.Rectangle(this.bird.x - toRenderValue(19), this.bird.y - toRenderValue(15), toRenderValue(38), toRenderValue(30));
   }
 
   getSegmentBounds(segment) {
@@ -744,15 +737,15 @@ class FlappyQuestScene extends Phaser.Scene {
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: "game",
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: gameWidth,
+  height: gameHeight,
   backgroundColor: "#0b1921",
   fps: {
     target: 60,
     forceSetTimeOut: false
   },
   scale: {
-    mode: Phaser.Scale.RESIZE,
+    mode: Phaser.Scale.NONE,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
   render: {
@@ -763,7 +756,31 @@ const game = new Phaser.Game({
   scene: [FlappyQuestScene]
 });
 
+const syncCanvasViewportSize = () => {
+  const canvas = game.canvas;
+  if (!canvas) return;
+  canvas.style.width = `${window.innerWidth}px`;
+  canvas.style.height = `${window.innerHeight}px`;
+};
+
+syncCanvasViewportSize();
+window.addEventListener("resize", syncCanvasViewportSize, { passive: true });
+
 const getScene = () => scene || game.scene.getScene("FlappyQuestScene");
+
+window.addEventListener(
+  "keydown",
+  (event) => {
+    if (event.code !== "Space") return;
+    const current = getScene();
+    if (current?.status !== "playing") return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    current.flap();
+  },
+  { capture: true, passive: false }
+);
 
 startButton.addEventListener("click", () => {
   getScene().setSkin(selectedSkin);
