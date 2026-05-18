@@ -1,14 +1,14 @@
 const LEVELS = [
-  { id: 1, name: "晨风港", targetScore: 5, pipeSpeed: 205, pipeGap: 190, pipeInterval: 1500, gravity: 760, fallGravity: 1030, maxFallSpeed: 510, flapVelocity: -325, windPush: 0, movingGates: false, challenge: "穿过 5 道宽风门", reward: "2 秒护盾" },
-  { id: 2, name: "绿塔航线", targetScore: 10, pipeSpeed: 225, pipeGap: 178, pipeInterval: 1430, gravity: 785, fallGravity: 1080, maxFallSpeed: 535, flapVelocity: -332, windPush: 0, movingGates: false, challenge: "风门略窄，保持节奏", reward: "下一关开局减速" },
-  { id: 3, name: "斜阳峡", targetScore: 15, pipeSpeed: 245, pipeGap: 166, pipeInterval: 1370, gravity: 810, fallGravity: 1140, maxFallSpeed: 560, flapVelocity: -340, windPush: 0, movingGates: false, challenge: "速度提升，连续穿越", reward: "额外 1 分" },
-  { id: 4, name: "逆流湾", targetScore: 20, pipeSpeed: 265, pipeGap: 158, pipeInterval: 1320, gravity: 835, fallGravity: 1200, maxFallSpeed: 585, flapVelocity: -348, windPush: -18, movingGates: false, challenge: "逆风轻推，提前修正高度", reward: "2.5 秒护盾" },
-  { id: 5, name: "星桥", targetScore: 25, pipeSpeed: 285, pipeGap: 150, pipeInterval: 1260, gravity: 858, fallGravity: 1260, maxFallSpeed: 615, flapVelocity: -356, windPush: 0, movingGates: true, challenge: "部分风门上下浮动", reward: "稳定翼，下一关重力降低" },
-  { id: 6, name: "雾岭", targetScore: 30, pipeSpeed: 305, pipeGap: 142, pipeInterval: 1210, gravity: 872, fallGravity: 1310, maxFallSpeed: 640, flapVelocity: -363, windPush: 22, movingGates: true, challenge: "顺风扰动，门距继续收紧", reward: "额外 2 分" },
-  { id: 7, name: "高压航道", targetScore: 35, pipeSpeed: 325, pipeGap: 135, pipeInterval: 1160, gravity: 902, fallGravity: 1370, maxFallSpeed: 670, flapVelocity: -370, windPush: 0, movingGates: true, challenge: "高速浮动风门", reward: "3 秒护盾" },
-  { id: 8, name: "晶脉裂谷", targetScore: 40, pipeSpeed: 345, pipeGap: 128, pipeInterval: 1110, gravity: 930, fallGravity: 1440, maxFallSpeed: 700, flapVelocity: -378, windPush: -26, movingGates: true, challenge: "高速逆风，容错降低", reward: "下一关开局减速" },
-  { id: 9, name: "雷鸣门", targetScore: 45, pipeSpeed: 365, pipeGap: 122, pipeInterval: 1060, gravity: 965, fallGravity: 1510, maxFallSpeed: 735, flapVelocity: -386, windPush: 28, movingGates: true, challenge: "强风与窄门同时出现", reward: "最终关额外护盾" },
-  { id: 10, name: "天穹终点", targetScore: 52, pipeSpeed: 390, pipeGap: 116, pipeInterval: 1000, gravity: 995, fallGravity: 1590, maxFallSpeed: 770, flapVelocity: -395, windPush: 0, movingGates: true, challenge: "最快、最窄、浮动最多", reward: "天穹完赛徽章" }
+  { id: 1, name: "晨风港", targetScore: 5, pipeSpeed: 205, pipeGap: 190, pipeInterval: 1500, gravity: 810, fallGravity: 1540, maxFallSpeed: 730, flapVelocity: -335, windPush: 0, movingGates: false, challenge: "穿过 5 道宽风门", reward: "2 秒护盾" },
+  { id: 2, name: "绿塔航线", targetScore: 10, pipeSpeed: 225, pipeGap: 178, pipeInterval: 1430, gravity: 832, fallGravity: 1620, maxFallSpeed: 760, flapVelocity: -341, windPush: 0, movingGates: false, challenge: "风门略窄，保持节奏", reward: "下一关开局减速" },
+  { id: 3, name: "斜阳峡", targetScore: 15, pipeSpeed: 245, pipeGap: 166, pipeInterval: 1370, gravity: 854, fallGravity: 1710, maxFallSpeed: 792, flapVelocity: -347, windPush: 0, movingGates: false, challenge: "速度提升，连续穿越", reward: "额外 1 分" },
+  { id: 4, name: "逆流湾", targetScore: 20, pipeSpeed: 265, pipeGap: 158, pipeInterval: 1320, gravity: 876, fallGravity: 1810, maxFallSpeed: 826, flapVelocity: -353, windPush: -18, movingGates: false, challenge: "逆风轻推，提前修正高度", reward: "2.5 秒护盾" },
+  { id: 5, name: "星桥", targetScore: 25, pipeSpeed: 285, pipeGap: 150, pipeInterval: 1260, gravity: 898, fallGravity: 1920, maxFallSpeed: 862, flapVelocity: -359, windPush: 0, movingGates: true, challenge: "部分风门上下浮动", reward: "稳定翼，下一关重力降低" },
+  { id: 6, name: "雾岭", targetScore: 30, pipeSpeed: 305, pipeGap: 142, pipeInterval: 1210, gravity: 920, fallGravity: 2030, maxFallSpeed: 900, flapVelocity: -365, windPush: 22, movingGates: true, challenge: "顺风扰动，门距继续收紧", reward: "额外 2 分" },
+  { id: 7, name: "高压航道", targetScore: 35, pipeSpeed: 325, pipeGap: 135, pipeInterval: 1160, gravity: 946, fallGravity: 2150, maxFallSpeed: 940, flapVelocity: -371, windPush: 0, movingGates: true, challenge: "高速浮动风门", reward: "3 秒护盾" },
+  { id: 8, name: "晶脉裂谷", targetScore: 40, pipeSpeed: 345, pipeGap: 128, pipeInterval: 1110, gravity: 974, fallGravity: 2280, maxFallSpeed: 982, flapVelocity: -377, windPush: -26, movingGates: true, challenge: "高速逆风，容错降低", reward: "下一关开局减速" },
+  { id: 9, name: "雷鸣门", targetScore: 45, pipeSpeed: 365, pipeGap: 122, pipeInterval: 1060, gravity: 1008, fallGravity: 2420, maxFallSpeed: 1028, flapVelocity: -383, windPush: 28, movingGates: true, challenge: "强风与窄门同时出现", reward: "最终关额外护盾" },
+  { id: 10, name: "天穹终点", targetScore: 52, pipeSpeed: 390, pipeGap: 116, pipeInterval: 1000, gravity: 1044, fallGravity: 2570, maxFallSpeed: 1080, flapVelocity: -389, windPush: 0, movingGates: true, challenge: "最快、最窄、浮动最多", reward: "天穹完赛徽章" }
 ];
 
 const THEMES = [
@@ -119,6 +119,9 @@ class FlappyQuestScene extends Phaser.Scene {
     this.slowUntil = 0;
     this.lastPipeAt = 0;
     this.crashUntil = 0;
+    this.flapLiftUntil = 0;
+    this.lastFlapAt = 0;
+    this.flapBoostUntil = 0;
   }
 
   create() {
@@ -138,13 +141,20 @@ class FlappyQuestScene extends Phaser.Scene {
     this.elapsed += deltaMs;
     const level = this.currentLevel();
     const speedScale = this.elapsed < this.slowUntil ? 0.82 : 1;
-    const pipeSpeed = level.pipeSpeed * speedScale;
-    const verticalGravity = this.velocityY > 0 ? level.fallGravity : level.gravity;
+    const flapBoost = this.elapsed < this.flapBoostUntil ? 1.16 : 1;
+    const pipeSpeed = level.pipeSpeed * speedScale * flapBoost;
+    const fallPressure = this.velocityY > 0 ? Phaser.Math.Clamp(this.velocityY / 520, 0, 0.55) : 0;
+    const verticalGravity = this.velocityY > 0 ? level.fallGravity * (1 + fallPressure) : level.gravity;
+    const liftAssist = this.elapsed < this.flapLiftUntil && this.velocityY < -90 ? 110 : 0;
 
-    this.velocityY += (verticalGravity + level.windPush) * delta;
-    this.velocityY = Phaser.Math.Clamp(this.velocityY, -460, level.maxFallSpeed);
+    this.velocityY += (verticalGravity + level.windPush - liftAssist) * delta;
+    this.velocityY = Phaser.Math.Clamp(this.velocityY, -430, level.maxFallSpeed);
     this.bird.y += this.velocityY * delta;
-    this.bird.rotation = Phaser.Math.Clamp(this.velocityY / 520, -0.55, 0.85);
+    const targetRotation =
+      this.velocityY < 0
+        ? Phaser.Math.Clamp(this.velocityY / 720, -0.48, -0.08)
+        : Phaser.Math.Clamp(0.14 + this.velocityY / 540, 0.14, 1);
+    this.bird.rotation = Phaser.Math.Linear(this.bird.rotation, targetRotation, this.velocityY < 0 ? 0.22 : 0.32);
     this.ground.tilePositionX += pipeSpeed * delta;
 
     if (this.elapsed - this.lastPipeAt > level.pipeInterval) {
@@ -180,6 +190,9 @@ class FlappyQuestScene extends Phaser.Scene {
     this.shieldUntil = 0;
     this.slowUntil = 0;
     this.crashUntil = 0;
+    this.flapLiftUntil = 0;
+    this.lastFlapAt = 0;
+    this.flapBoostUntil = 0;
     this.resetBirdVisuals();
     this.bird.setPosition(this.scale.width * 0.32, this.scale.height * 0.48);
     this.emitHud();
@@ -318,6 +331,9 @@ class FlappyQuestScene extends Phaser.Scene {
     this.shieldUntil = 0;
     this.slowUntil = 0;
     this.crashUntil = 0;
+    this.flapLiftUntil = 0;
+    this.lastFlapAt = 0;
+    this.flapBoostUntil = 0;
     this.resetBirdVisuals();
     this.bird.setPosition(this.scale.width * 0.32, this.scale.height * 0.48);
     this.showLevelMessage(this.currentLevel(), true);
@@ -325,14 +341,30 @@ class FlappyQuestScene extends Phaser.Scene {
   }
 
   flap() {
-    this.velocityY = this.currentLevel().flapVelocity;
+    const level = this.currentLevel();
+    const rapidTap = this.elapsed - this.lastFlapAt < 145;
+    const fallingRecovery = this.velocityY > 0 ? Phaser.Math.Clamp(this.velocityY * 0.09, 0, 34) : 0;
+    const carry = this.velocityY < 0 ? this.velocityY * 0.06 : 0;
+    this.velocityY = Math.max(-440, level.flapVelocity + carry - fallingRecovery - (rapidTap ? 4 : 0));
+    this.bird.rotation = -0.44;
+    this.flapLiftUntil = this.elapsed + 42;
+    this.flapBoostUntil = this.elapsed + 260;
+    this.lastFlapAt = this.elapsed;
+    this.tweens.killTweensOf(this.bird);
     this.tweens.add({
       targets: this.bird,
-      scaleX: 1.08,
-      scaleY: 0.92,
+      scaleX: 1.13,
+      scaleY: 0.86,
       yoyo: true,
-      duration: 90,
-      ease: "Sine.easeOut"
+      duration: 58,
+      ease: "Quad.easeOut"
+    });
+    this.tweens.add({
+      targets: this.wing,
+      scaleY: 0.46,
+      yoyo: true,
+      duration: 58,
+      ease: "Quad.easeOut"
     });
   }
 
@@ -388,19 +420,6 @@ class FlappyQuestScene extends Phaser.Scene {
       segment.add(this.add.circle(-width / 2 + 18, offset, 4, 0xf6fbf7, 0.36));
       segment.add(this.add.circle(width / 2 - 18, offset, 4, 0xf6fbf7, 0.36));
     }
-
-    const ornamentY = isTop ? height / 2 + 22 : -height / 2 - 22;
-    const ornament = this.add.star(0, ornamentY, 6, 5, 13, theme.accent, 0.85);
-    ornament.setStrokeStyle(2, 0x0b1921, 0.35);
-    segment.add(ornament);
-
-    this.tweens.add({
-      targets: ornament,
-      angle: 360,
-      duration: 2400,
-      repeat: -1,
-      ease: "Linear"
-    });
 
     return segment;
   }
