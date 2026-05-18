@@ -1,14 +1,14 @@
 const LEVELS = [
-  { id: 1, name: "晨风港", targetScore: 5, pipeSpeed: 205, pipeGap: 190, pipeInterval: 1500, gravity: 1220, fallGravity: 1680, maxFallSpeed: 760, flapVelocity: -245, windPush: 0, movingGates: false, challenge: "穿过 5 道宽风门", reward: "2 秒护盾" },
-  { id: 2, name: "绿塔航线", targetScore: 10, pipeSpeed: 225, pipeGap: 178, pipeInterval: 1430, gravity: 1250, fallGravity: 1760, maxFallSpeed: 790, flapVelocity: -250, windPush: 0, movingGates: false, challenge: "风门略窄，保持节奏", reward: "下一关开局减速" },
-  { id: 3, name: "斜阳峡", targetScore: 15, pipeSpeed: 245, pipeGap: 166, pipeInterval: 1370, gravity: 1280, fallGravity: 1850, maxFallSpeed: 824, flapVelocity: -255, windPush: 0, movingGates: false, challenge: "速度提升，连续穿越", reward: "额外 1 分" },
-  { id: 4, name: "逆流湾", targetScore: 20, pipeSpeed: 265, pipeGap: 158, pipeInterval: 1320, gravity: 1310, fallGravity: 1950, maxFallSpeed: 860, flapVelocity: -260, windPush: -18, movingGates: false, challenge: "逆风轻推，提前修正高度", reward: "2.5 秒护盾" },
-  { id: 5, name: "星桥", targetScore: 25, pipeSpeed: 285, pipeGap: 150, pipeInterval: 1260, gravity: 1340, fallGravity: 2060, maxFallSpeed: 898, flapVelocity: -265, windPush: 0, movingGates: true, challenge: "部分风门上下浮动", reward: "稳定翼，下一关重力降低" },
-  { id: 6, name: "雾岭", targetScore: 30, pipeSpeed: 305, pipeGap: 142, pipeInterval: 1210, gravity: 1370, fallGravity: 2180, maxFallSpeed: 938, flapVelocity: -270, windPush: 22, movingGates: true, challenge: "顺风扰动，门距继续收紧", reward: "额外 2 分" },
-  { id: 7, name: "高压航道", targetScore: 35, pipeSpeed: 325, pipeGap: 135, pipeInterval: 1160, gravity: 1410, fallGravity: 2310, maxFallSpeed: 980, flapVelocity: -275, windPush: 0, movingGates: true, challenge: "高速浮动风门", reward: "3 秒护盾" },
-  { id: 8, name: "晶脉裂谷", targetScore: 40, pipeSpeed: 345, pipeGap: 128, pipeInterval: 1110, gravity: 1450, fallGravity: 2450, maxFallSpeed: 1024, flapVelocity: -280, windPush: -26, movingGates: true, challenge: "高速逆风，容错降低", reward: "下一关开局减速" },
-  { id: 9, name: "雷鸣门", targetScore: 45, pipeSpeed: 365, pipeGap: 122, pipeInterval: 1060, gravity: 1490, fallGravity: 2600, maxFallSpeed: 1072, flapVelocity: -285, windPush: 28, movingGates: true, challenge: "强风与窄门同时出现", reward: "最终关额外护盾" },
-  { id: 10, name: "天穹终点", targetScore: 52, pipeSpeed: 390, pipeGap: 116, pipeInterval: 1000, gravity: 1530, fallGravity: 2760, maxFallSpeed: 1124, flapVelocity: -290, windPush: 0, movingGates: true, challenge: "最快、最窄、浮动最多", reward: "天穹完赛徽章" }
+  { id: 1, name: "晨风港", targetScore: 5, pipeSpeed: 205, pipeGap: 190, pipeInterval: 1500, gravity: 1220, fallGravity: 1680, maxFallSpeed: 760, flapVelocity: -300, windPush: 0, movingGates: false, challenge: "穿过 5 道宽风门", reward: "2 秒护盾" },
+  { id: 2, name: "绿塔航线", targetScore: 10, pipeSpeed: 225, pipeGap: 178, pipeInterval: 1430, gravity: 1250, fallGravity: 1760, maxFallSpeed: 790, flapVelocity: -306, windPush: 0, movingGates: false, challenge: "风门略窄，保持节奏", reward: "下一关开局减速" },
+  { id: 3, name: "斜阳峡", targetScore: 15, pipeSpeed: 245, pipeGap: 166, pipeInterval: 1370, gravity: 1280, fallGravity: 1850, maxFallSpeed: 824, flapVelocity: -312, windPush: 0, movingGates: false, challenge: "速度提升，连续穿越", reward: "额外 1 分" },
+  { id: 4, name: "逆流湾", targetScore: 20, pipeSpeed: 265, pipeGap: 158, pipeInterval: 1320, gravity: 1310, fallGravity: 1950, maxFallSpeed: 860, flapVelocity: -318, windPush: -18, movingGates: false, challenge: "逆风轻推，提前修正高度", reward: "2.5 秒护盾" },
+  { id: 5, name: "星桥", targetScore: 25, pipeSpeed: 285, pipeGap: 150, pipeInterval: 1260, gravity: 1340, fallGravity: 2060, maxFallSpeed: 898, flapVelocity: -324, windPush: 0, movingGates: true, challenge: "部分风门上下浮动", reward: "稳定翼，下一关重力降低" },
+  { id: 6, name: "雾岭", targetScore: 30, pipeSpeed: 305, pipeGap: 142, pipeInterval: 1210, gravity: 1370, fallGravity: 2180, maxFallSpeed: 938, flapVelocity: -330, windPush: 22, movingGates: true, challenge: "顺风扰动，门距继续收紧", reward: "额外 2 分" },
+  { id: 7, name: "高压航道", targetScore: 35, pipeSpeed: 325, pipeGap: 135, pipeInterval: 1160, gravity: 1410, fallGravity: 2310, maxFallSpeed: 980, flapVelocity: -336, windPush: 0, movingGates: true, challenge: "高速浮动风门", reward: "3 秒护盾" },
+  { id: 8, name: "晶脉裂谷", targetScore: 40, pipeSpeed: 345, pipeGap: 128, pipeInterval: 1110, gravity: 1450, fallGravity: 2450, maxFallSpeed: 1024, flapVelocity: -342, windPush: -26, movingGates: true, challenge: "高速逆风，容错降低", reward: "下一关开局减速" },
+  { id: 9, name: "雷鸣门", targetScore: 45, pipeSpeed: 365, pipeGap: 122, pipeInterval: 1060, gravity: 1490, fallGravity: 2600, maxFallSpeed: 1072, flapVelocity: -348, windPush: 28, movingGates: true, challenge: "强风与窄门同时出现", reward: "最终关额外护盾" },
+  { id: 10, name: "天穹终点", targetScore: 52, pipeSpeed: 390, pipeGap: 116, pipeInterval: 1000, gravity: 1530, fallGravity: 2760, maxFallSpeed: 1124, flapVelocity: -354, windPush: 0, movingGates: true, challenge: "最快、最窄、浮动最多", reward: "天穹完赛徽章" }
 ];
 
 const THEMES = [
@@ -344,7 +344,7 @@ class FlappyQuestScene extends Phaser.Scene {
     const level = this.currentLevel();
     const rapidTap = this.elapsed - this.lastFlapAt < 145;
     const fallingRecovery = this.velocityY > 0 ? Phaser.Math.Clamp(this.velocityY * 0.055, 0, 20) : 0;
-    this.velocityY = Math.max(-330, level.flapVelocity - fallingRecovery - (rapidTap ? 2 : 0));
+    this.velocityY = Math.max(-370, level.flapVelocity - fallingRecovery - (rapidTap ? 2 : 0));
     this.bird.rotation = -0.44;
     this.flapLiftUntil = this.elapsed;
     this.flapBoostUntil = this.elapsed + 180;
