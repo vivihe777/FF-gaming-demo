@@ -1,3 +1,7 @@
+const APP_VERSION = "v.0.18";
+const WEATHER_SCORE_THRESHOLD = 20;
+const WEATHER_TYPES = ["lightning", "rain", "tornado", "thunderstorm"];
+
 const LEVELS = [
   { id: 1, name: "晨风港", targetScore: 5, pipeSpeed: 185, pipeGap: 228, pipeInterval: 1680, gravity: 1180, fallGravity: 1600, maxFallSpeed: 720, flapVelocity: -302, maxStep: 62, windPush: 0, movingGates: false, challenge: "穿过 5 道宽风门", reward: "2 秒护盾" },
   { id: 2, name: "绿塔航线", targetScore: 10, pipeSpeed: 198, pipeGap: 216, pipeInterval: 1620, gravity: 1200, fallGravity: 1660, maxFallSpeed: 742, flapVelocity: -306, maxStep: 66, windPush: 0, movingGates: false, challenge: "风门略窄，保持节奏", reward: "下一关开局减速" },
@@ -36,6 +40,7 @@ const startButton = document.querySelector("#startButton");
 const restartButton = document.querySelector("#restartButton");
 const homeButton = document.querySelector("#homeButton");
 const pauseButton = document.querySelector("#pauseButton");
+const versionBadgeEl = document.querySelector("#versionBadge");
 const skinButtons = [...document.querySelectorAll(".skin-option")];
 
 let selectedSkin = "aurora";
@@ -73,6 +78,9 @@ const setMenuVisible = (visible) => {
 };
 
 const setStatusCopy = (status) => {
+  versionBadgeEl.textContent = APP_VERSION;
+  versionBadgeEl.classList.toggle("hidden", status !== "menu");
+
   if (status === "gameover") {
     setMenuVisible(true);
     statusTextEl.textContent = "撞上风门了。换个节奏，重新起飞。";
@@ -147,6 +155,12 @@ class FlappyQuestScene extends Phaser.Scene {
     this.nextTrailAt = 0;
     this.trailCursor = 0;
     this.shieldStrokeActive = false;
+    this.weatherUnlocked = false;
+    this.weatherType = "clear";
+    this.nextWeatherSwapAt = 0;
+    this.nextLightningAt = 0;
+    this.lightningUntil = 0;
+    this.tornadoPhase = 0;
   }
 
   create() {
@@ -190,6 +204,7 @@ class FlappyQuestScene extends Phaser.Scene {
     this.updatePipes(delta, pipeSpeed);
     this.updateBirdEffects(delta);
     this.updateTrail(delta, pipeSpeed);
+    this.updateWeather(delta, pipeSpeed);
     this.checkBounds();
   }
 
@@ -222,6 +237,7 @@ class FlappyQuestScene extends Phaser.Scene {
     this.flapPulseUntil = 0;
     this.nextTrailAt = 0;
     this.shieldStrokeActive = false;
+    this.resetWeather();
     this.resetBirdVisuals();
     this.bird.setPosition(this.scale.width * 0.32, this.scale.height * 0.48);
     this.emitHud();
@@ -273,12 +289,26 @@ class FlappyQuestScene extends Phaser.Scene {
     this.ground.setTint(0x20302b);
     this.ground.setAlpha(0.95);
     this.createThemeLayers();
+    this.createWeatherLayer();
   }
 
   createThemeLayers() {
     this.themeGraphics = this.add.graphics().setDepth(-20);
     this.currentThemeIndex = -1;
     this.applyTheme(0, true);
+  }
+
+  createWeatherLayer() {
+    this.weatherDim = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, this.scale.width, this.scale.height, 0x071014, 0);
+    this.weatherDim.setDepth(-12);
+    this.weatherGraphics = this.add.graphics().setDepth(-11);
+    this.lightningGraphics = this.add.graphics().setDepth(9);
+    this.rainDrops = Array.from({ length: isMobileViewport ? 42 : 58 }, () => {
+      const drop = this.add.rectangle(0, 0, toRenderValue(2), toRenderValue(18), 0x9cdcff, 0).setDepth(8);
+      drop.speed = Phaser.Math.Between(toRenderValue(520), toRenderValue(760));
+      return drop;
+    });
+    this.resetWeather();
   }
 
   createBird() {
@@ -377,6 +407,7 @@ class FlappyQuestScene extends Phaser.Scene {
     this.flapPulseUntil = 0;
     this.nextTrailAt = 0;
     this.shieldStrokeActive = false;
+    this.resetWeather();
     this.resetBirdVisuals();
     this.bird.setPosition(this.scale.width * 0.32, this.scale.height * 0.48);
     this.showLevelMessage(this.currentLevel(), true);
@@ -508,6 +539,7 @@ class FlappyQuestScene extends Phaser.Scene {
       this.showLevelMessage(this.currentLevel(), false);
     }
 
+    this.unlockWeatherIfReady();
     this.emitHud();
   }
 
@@ -594,6 +626,137 @@ class FlappyQuestScene extends Phaser.Scene {
     if (shieldActive !== this.shieldStrokeActive) {
       this.shieldStrokeActive = shieldActive;
       this.birdBody.setStrokeStyle(shieldActive ? 4 : 0, 0xf6d365, shieldActive ? 0.9 : 0);
+    }
+  }
+
+  unlockWeatherIfReady() {
+    if (this.weatherUnlocked || this.score < WEATHER_SCORE_THRESHOLD) return;
+
+    this.weatherUnlocked = true;
+    this.pickWeatherType();
+    this.nextWeatherSwapAt = this.elapsed + Phaser.Math.Between(7000, 10000);
+    this.nextLightningAt = this.elapsed + Phaser.Math.Between(700, 1600);
+    this.showWeatherMessage();
+  }
+
+  pickWeatherType() {
+    const next = Phaser.Utils.Array.GetRandom(WEATHER_TYPES);
+    this.weatherType = next === this.weatherType ? Phaser.Utils.Array.GetRandom(WEATHER_TYPES) : next;
+    this.weatherDim.setAlpha(this.weatherType === "thunderstorm" ? 0.24 : this.weatherType === "rain" ? 0.12 : 0.06);
+  }
+
+  showWeatherMessage() {
+    const labels = {
+      lightning: "闪电天气",
+      rain: "暴雨天气",
+      tornado: "龙卷风天气",
+      thunderstorm: "雷暴天气"
+    };
+    this.rewardPopText.setText(`${labels[this.weatherType]}出现`);
+    this.rewardPopText.setPosition(this.scale.width / 2, toRenderValue(154));
+    this.tweens.killTweensOf(this.rewardPopText);
+    this.rewardPopText.setAlpha(1);
+    this.tweens.add({
+      targets: this.rewardPopText,
+      alpha: 0,
+      delay: 1050,
+      duration: 360,
+      ease: "Sine.easeIn"
+    });
+  }
+
+  resetWeather() {
+    this.weatherUnlocked = false;
+    this.weatherType = "clear";
+    this.nextWeatherSwapAt = 0;
+    this.nextLightningAt = 0;
+    this.lightningUntil = 0;
+    this.tornadoPhase = 0;
+    this.weatherDim?.setAlpha(0);
+    this.weatherGraphics?.clear();
+    this.lightningGraphics?.clear();
+    this.rainDrops?.forEach((drop) => {
+      drop.setAlpha(0);
+      drop.setPosition(Phaser.Math.Between(0, this.scale.width), Phaser.Math.Between(-this.scale.height, 0));
+    });
+  }
+
+  updateWeather(delta, pipeSpeed) {
+    if (!this.weatherUnlocked) return;
+
+    if (this.elapsed >= this.nextWeatherSwapAt) {
+      this.pickWeatherType();
+      this.nextWeatherSwapAt = this.elapsed + Phaser.Math.Between(7000, 10500);
+      this.showWeatherMessage();
+    }
+
+    const hasRain = this.weatherType === "rain" || this.weatherType === "thunderstorm";
+    const hasLightning = this.weatherType === "lightning" || this.weatherType === "thunderstorm";
+    const hasTornado = this.weatherType === "tornado";
+
+    this.updateRain(delta, pipeSpeed, hasRain);
+    this.updateLightning(hasLightning);
+    this.updateTornado(delta, hasTornado);
+  }
+
+  updateRain(delta, pipeSpeed, active) {
+    const alpha = active ? (this.weatherType === "thunderstorm" ? 0.58 : 0.42) : 0;
+    for (const drop of this.rainDrops) {
+      drop.setAlpha(alpha);
+      if (!active) continue;
+
+      drop.x -= (pipeSpeed * 0.18 + toRenderValue(190)) * delta;
+      drop.y += drop.speed * delta;
+      drop.rotation = -0.28;
+
+      if (drop.y > this.scale.height + toRenderValue(28) || drop.x < toRenderValue(-24)) {
+        drop.setPosition(Phaser.Math.Between(0, this.scale.width + toRenderValue(80)), Phaser.Math.Between(toRenderValue(-120), toRenderValue(-12)));
+      }
+    }
+  }
+
+  updateLightning(active) {
+    if (!active) {
+      this.lightningGraphics.clear();
+      return;
+    }
+
+    if (this.elapsed >= this.nextLightningAt) {
+      this.lightningUntil = this.elapsed + Phaser.Math.Between(80, 130);
+      this.nextLightningAt = this.elapsed + Phaser.Math.Between(1400, 3100);
+      this.cameras.main.flash(110, 218, 236, 255, false);
+    }
+
+    this.lightningGraphics.clear();
+    if (this.elapsed > this.lightningUntil) return;
+
+    const startX = Phaser.Math.Between(toRenderValue(80), this.scale.width - toRenderValue(80));
+    const segments = 6;
+    this.lightningGraphics.lineStyle(toRenderValue(3), 0xeaf7ff, 0.92);
+    this.lightningGraphics.beginPath();
+    this.lightningGraphics.moveTo(startX, 0);
+    for (let i = 1; i <= segments; i += 1) {
+      const x = startX + Phaser.Math.Between(toRenderValue(-34), toRenderValue(34));
+      const y = (this.scale.height * 0.62 * i) / segments;
+      this.lightningGraphics.lineTo(x, y);
+    }
+    this.lightningGraphics.strokePath();
+  }
+
+  updateTornado(delta, active) {
+    this.weatherGraphics.clear();
+    if (!active) return;
+
+    this.tornadoPhase += delta * 4.6;
+    const baseX = this.scale.width * 0.72 + Math.sin(this.tornadoPhase * 0.55) * toRenderValue(42);
+    const baseY = this.scale.height - toRenderValue(96);
+    this.weatherGraphics.lineStyle(toRenderValue(3), 0xd7f5ff, 0.46);
+    for (let i = 0; i < 7; i += 1) {
+      const t = i / 6;
+      const y = baseY - t * toRenderValue(210);
+      const width = toRenderValue(26 + t * 88 + Math.sin(this.tornadoPhase + i) * 9);
+      const x = baseX + Math.sin(this.tornadoPhase + i * 0.75) * toRenderValue(12);
+      this.weatherGraphics.strokeEllipse(x, y, width, toRenderValue(13 + t * 12));
     }
   }
 

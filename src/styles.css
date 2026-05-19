@@ -141,6 +141,22 @@ canvas {
   display: none;
 }
 
+.version-badge {
+  position: absolute;
+  z-index: 6;
+  left: max(14px, env(safe-area-inset-left));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  color: rgba(246, 251, 247, 0.72);
+  background: rgba(5, 16, 19, 0.56);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+}
+
 .brand-block {
   display: grid;
   gap: 8px;
