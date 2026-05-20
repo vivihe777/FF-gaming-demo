@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flappy Quest</title>
-    <link rel="stylesheet" href="./src/styles.css?v=20260518-v018-weather" />
+    <link rel="stylesheet" href="./src/styles.css?v=20260519-v020-growth" />
   </head>
   <body>
     <div id="app">
@@ -13,9 +13,13 @@
           <span>分数</span>
           <strong id="score">0</strong>
         </div>
+        <div class="hud-card hud-coins">
+          <span>金币</span>
+          <strong id="runCoins">0</strong>
+        </div>
         <div class="hud-card hud-level">
           <span>关卡</span>
-          <strong id="level">1 / 10</strong>
+          <strong id="level">1 / 12</strong>
         </div>
         <div class="hud-card hud-progress">
           <span id="challenge">穿过 5 道风门</span>
@@ -28,9 +32,20 @@
 
       <section id="menu" class="menu-panel">
         <div class="brand-block">
-          <p class="eyebrow">10 关飞行挑战</p>
+          <p class="eyebrow">v0.2 成长飞行挑战</p>
           <h1>Flappy Quest</h1>
           <p id="statusText">点击、触屏或按空格上升，穿过风门完成闯关。</p>
+        </div>
+
+        <div class="wallet-panel" aria-label="成长资源">
+          <div>
+            <span>金币</span>
+            <strong id="coinBalance">0</strong>
+          </div>
+          <div>
+            <span>最佳</span>
+            <strong id="bestScore">0</strong>
+          </div>
         </div>
 
         <div class="skin-selector" aria-label="皮肤选择">
@@ -46,6 +61,33 @@
             <span class="skin-swatch lunar"></span>
             <span>月影探险家</span>
           </button>
+          <button class="skin-option" type="button" data-skin="raven">
+            <span class="skin-swatch raven"></span>
+            <span>黑曜侦察机</span>
+          </button>
+          <button class="skin-option" type="button" data-skin="petal">
+            <span class="skin-swatch petal"></span>
+            <span>樱羽滑翔者</span>
+          </button>
+          <button class="skin-option" type="button" data-skin="comet">
+            <span class="skin-swatch comet"></span>
+            <span>彗星喷射翼</span>
+          </button>
+        </div>
+
+        <div class="upgrade-panel" aria-label="成长道具">
+          <div class="upgrade-row">
+            <span id="shieldStatus">护盾：0 次</span>
+            <button class="shop-button" type="button" data-item="shield" data-tier="1">I 50</button>
+            <button class="shop-button" type="button" data-item="shield" data-tier="2">II 150</button>
+            <button class="shop-button" type="button" data-item="shield" data-tier="3">III 300</button>
+          </div>
+          <div class="upgrade-row">
+            <span id="shrinkStatus">缩小：0 次</span>
+            <button class="shop-button" type="button" data-item="shrink" data-tier="1">I 80</button>
+            <button class="shop-button" type="button" data-item="shrink" data-tier="2">II 180</button>
+            <button class="shop-button" type="button" data-item="shrink" data-tier="3">III 320</button>
+          </div>
         </div>
 
         <div id="rewardText" class="reward-text">奖励：每关完成后获得短暂无敌护盾。</div>
@@ -57,10 +99,14 @@
         </div>
       </section>
 
-      <div id="versionBadge" class="version-badge">v.0.18</div>
+      <button id="shrinkSkillButton" class="skill-button hidden" type="button">
+        <span>缩小</span>
+        <strong id="shrinkSkillCount">0</strong>
+      </button>
+      <div id="versionBadge" class="version-badge">v0.2</div>
       <div id="game"></div>
     </div>
     <script src="./public/vendor/phaser.min.js"></script>
-    <script type="module" src="./src/main.js?v=20260518-v018-weather"></script>
+    <script type="module" src="./src/main.js?v=20260519-v020-growth"></script>
   </body>
 </html>

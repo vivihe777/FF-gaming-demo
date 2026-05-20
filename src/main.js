@@ -1,6 +1,19 @@
-const APP_VERSION = "v.0.18";
+const APP_VERSION = "v0.2";
 const WEATHER_SCORE_THRESHOLD = 20;
 const WEATHER_TYPES = ["lightning", "rain", "tornado", "thunderstorm"];
+const SAVE_KEY = "flappyQuestSave.v2";
+const COIN_CHANCE = 0.28;
+const COIN_VALUES = [1];
+const SHIELD_TIERS = {
+  1: { price: 50, uses: 1 },
+  2: { price: 150, uses: 2 },
+  3: { price: 300, uses: 3 }
+};
+const SHRINK_TIERS = {
+  1: { price: 80, duration: 10000 },
+  2: { price: 180, duration: 15000 },
+  3: { price: 320, duration: 20000 }
+};
 
 const LEVELS = [
   { id: 1, name: "晨风港", targetScore: 5, pipeSpeed: 185, pipeGap: 228, pipeInterval: 1680, gravity: 1180, fallGravity: 1600, maxFallSpeed: 720, flapVelocity: -302, maxStep: 62, windPush: 0, movingGates: false, challenge: "穿过 5 道宽风门", reward: "2 秒护盾" },
@@ -12,7 +25,9 @@ const LEVELS = [
   { id: 7, name: "高压航道", targetScore: 35, pipeSpeed: 284, pipeGap: 164, pipeInterval: 1320, gravity: 1345, fallGravity: 2160, maxFallSpeed: 912, flapVelocity: -332, maxStep: 96, windPush: 0, movingGates: true, challenge: "高速浮动风门", reward: "3 秒护盾" },
   { id: 8, name: "晶脉裂谷", targetScore: 40, pipeSpeed: 306, pipeGap: 154, pipeInterval: 1260, gravity: 1385, fallGravity: 2310, maxFallSpeed: 958, flapVelocity: -338, maxStep: 102, windPush: -16, movingGates: true, challenge: "高速逆风，容错降低", reward: "下一关开局减速" },
   { id: 9, name: "雷鸣门", targetScore: 45, pipeSpeed: 330, pipeGap: 144, pipeInterval: 1200, gravity: 1430, fallGravity: 2480, maxFallSpeed: 1008, flapVelocity: -344, maxStep: 108, windPush: 18, movingGates: true, challenge: "强风与窄门同时出现", reward: "最终关额外护盾" },
-  { id: 10, name: "天穹终点", targetScore: 52, pipeSpeed: 356, pipeGap: 136, pipeInterval: 1140, gravity: 1480, fallGravity: 2660, maxFallSpeed: 1064, flapVelocity: -350, maxStep: 114, windPush: 0, movingGates: true, challenge: "最快、最窄、浮动最多", reward: "天穹完赛徽章" }
+  { id: 10, name: "天穹终点", targetScore: 60, pipeSpeed: 356, pipeGap: 136, pipeInterval: 1140, gravity: 1480, fallGravity: 2660, maxFallSpeed: 1064, flapVelocity: -350, maxStep: 114, windPush: 0, movingGates: true, challenge: "最快、最窄、浮动最多", reward: "天穹完赛徽章" },
+  { id: 11, name: "星核远征", targetScore: 80, pipeSpeed: 368, pipeGap: 132, pipeInterval: 1120, gravity: 1505, fallGravity: 2740, maxFallSpeed: 1090, flapVelocity: -352, maxStep: 116, windPush: -10, movingGates: true, challenge: "长航线保持节奏", reward: "金币奖励提高" },
+  { id: 12, name: "云顶终章", targetScore: 100, pipeSpeed: 382, pipeGap: 128, pipeInterval: 1100, gravity: 1530, fallGravity: 2820, maxFallSpeed: 1120, flapVelocity: -354, maxStep: 118, windPush: 10, movingGates: true, challenge: "冲击 100 分终点", reward: "云顶完赛徽章" }
 ];
 
 const THEMES = [
@@ -24,27 +39,117 @@ const THEMES = [
 ];
 
 const SKINS = {
-  aurora: { body: 0x42f5b9, bodyDark: 0x16856e, wing: 0x3a83ff, trail: 0x8ee5c0 },
-  ember: { body: 0xffce5c, bodyDark: 0xb7472d, wing: 0xff4f5e, trail: 0xff9d4d },
-  lunar: { body: 0xd9e4ff, bodyDark: 0x6550d6, wing: 0x7657ff, trail: 0xb5c7ff }
+  aurora: { body: 0x42f5b9, bodyDark: 0x16856e, wing: 0x3a83ff, trail: 0x8ee5c0, beak: 0xf6d365, style: "classic" },
+  ember: { body: 0xffce5c, bodyDark: 0xb7472d, wing: 0xff4f5e, trail: 0xff9d4d, beak: 0xffffff, style: "racer" },
+  lunar: { body: 0xd9e4ff, bodyDark: 0x6550d6, wing: 0x7657ff, trail: 0xb5c7ff, beak: 0xf6d365, style: "glider" },
+  raven: { body: 0x1b2533, bodyDark: 0x8ee5c0, wing: 0x0b1118, trail: 0x9fffe0, beak: 0xc7f9ff, style: "drone" },
+  petal: { body: 0xffc7dc, bodyDark: 0xff6fae, wing: 0xffffff, trail: 0xffb3d2, beak: 0xffef9a, style: "butterfly" },
+  comet: { body: 0x6ee7ff, bodyDark: 0xff7b2f, wing: 0xffe15c, trail: 0xff8a3d, beak: 0xffffff, style: "rocket" }
 };
 
 const scoreEl = document.querySelector("#score");
 const levelEl = document.querySelector("#level");
+const runCoinsEl = document.querySelector("#runCoins");
 const challengeEl = document.querySelector("#challenge");
 const progressBarEl = document.querySelector("#progressBar");
 const menuEl = document.querySelector("#menu");
 const statusTextEl = document.querySelector("#statusText");
 const rewardTextEl = document.querySelector("#rewardText");
+const coinBalanceEl = document.querySelector("#coinBalance");
+const bestScoreEl = document.querySelector("#bestScore");
+const shieldStatusEl = document.querySelector("#shieldStatus");
+const shrinkStatusEl = document.querySelector("#shrinkStatus");
+const shrinkSkillButton = document.querySelector("#shrinkSkillButton");
+const shrinkSkillCountEl = document.querySelector("#shrinkSkillCount");
 const startButton = document.querySelector("#startButton");
 const restartButton = document.querySelector("#restartButton");
 const homeButton = document.querySelector("#homeButton");
 const pauseButton = document.querySelector("#pauseButton");
 const versionBadgeEl = document.querySelector("#versionBadge");
 const skinButtons = [...document.querySelectorAll(".skin-option")];
+const shopButtons = [...document.querySelectorAll(".shop-button")];
 
 let selectedSkin = "aurora";
 let scene;
+
+const defaultSave = () => ({
+  coins: 0,
+  bestScore: 0,
+  inventory: {
+    shieldCharges: 0,
+    shrinkUses: []
+  }
+});
+
+const readSave = () => {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(SAVE_KEY));
+    return {
+      ...defaultSave(),
+      ...parsed,
+      inventory: {
+        ...defaultSave().inventory,
+        ...(parsed?.inventory ?? {}),
+        shrinkUses: Array.isArray(parsed?.inventory?.shrinkUses) ? parsed.inventory.shrinkUses : []
+      }
+    };
+  } catch {
+    return defaultSave();
+  }
+};
+
+let saveData = readSave();
+
+const writeSave = () => {
+  window.localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+};
+
+const updateEconomyUi = () => {
+  coinBalanceEl.textContent = String(saveData.coins);
+  bestScoreEl.textContent = String(saveData.bestScore);
+  shieldStatusEl.textContent = `护盾：${saveData.inventory.shieldCharges} 次`;
+  shrinkStatusEl.textContent = `缩小：${saveData.inventory.shrinkUses.length} 次`;
+  shrinkSkillCountEl.textContent = String(saveData.inventory.shrinkUses.length);
+  shrinkSkillButton.disabled = saveData.inventory.shrinkUses.length === 0;
+  shopButtons.forEach((button) => {
+    const tiers = button.dataset.item === "shield" ? SHIELD_TIERS : SHRINK_TIERS;
+    button.disabled = saveData.coins < tiers[button.dataset.tier].price;
+  });
+};
+
+const addCoinsToSave = (amount) => {
+  saveData.coins += amount;
+  writeSave();
+  updateEconomyUi();
+};
+
+const updateBestScore = (score) => {
+  if (score <= saveData.bestScore) return;
+  saveData.bestScore = score;
+  writeSave();
+  updateEconomyUi();
+};
+
+const grantLocalTestCoins = (amount = 600) => {
+  if (!["127.0.0.1", "localhost"].includes(window.location.hostname)) return;
+  addCoinsToSave(amount);
+};
+
+const buyUpgrade = (item, tier) => {
+  const tiers = item === "shield" ? SHIELD_TIERS : SHRINK_TIERS;
+  const config = tiers[tier];
+  if (!config || saveData.coins < config.price) return false;
+
+  saveData.coins -= config.price;
+  if (item === "shield") {
+    saveData.inventory.shieldCharges += config.uses;
+  } else {
+    saveData.inventory.shrinkUses.push(config.duration);
+  }
+  writeSave();
+  updateEconomyUi();
+  return true;
+};
 
 const isMobileViewport = window.matchMedia("(pointer: coarse), (max-width: 760px)").matches;
 const renderResolution = isMobileViewport ? 2 : 1;
@@ -80,6 +185,7 @@ const setMenuVisible = (visible) => {
 const setStatusCopy = (status) => {
   versionBadgeEl.textContent = APP_VERSION;
   versionBadgeEl.classList.toggle("hidden", status !== "menu");
+  shrinkSkillButton.classList.toggle("hidden", status !== "playing");
 
   if (status === "gameover") {
     setMenuVisible(true);
@@ -93,7 +199,7 @@ const setStatusCopy = (status) => {
 
   if (status === "complete") {
     setMenuVisible(true);
-    statusTextEl.textContent = "10 关全部完成，天穹航线通关。";
+    statusTextEl.textContent = "100 分航线完成，成长系统会保留金币和记录。";
     startButton.classList.add("hidden");
     restartButton.classList.remove("hidden");
     homeButton.classList.remove("hidden");
@@ -118,7 +224,7 @@ const setStatusCopy = (status) => {
   }
 
   setMenuVisible(true);
-  statusTextEl.textContent = "点击、触屏或按空格上升，穿过风门完成闯关。";
+  statusTextEl.textContent = "点击、触屏或按空格上升，收集金币购买成长道具。";
   startButton.classList.remove("hidden");
   restartButton.classList.add("hidden");
   homeButton.classList.add("hidden");
@@ -128,22 +234,29 @@ const setStatusCopy = (status) => {
 const updateHud = ({ score, levelIndex, progress, challenge, reward }) => {
   const level = LEVELS[levelIndex];
   scoreEl.textContent = String(score);
+  runCoinsEl.textContent = String(scene?.runCoins ?? 0);
   levelEl.textContent = `${level.id} / ${LEVELS.length}`;
   challengeEl.textContent = challenge;
   progressBarEl.style.width = `${Math.round(progress * 100)}%`;
   rewardTextEl.textContent = `奖励：${reward}`;
+  updateEconomyUi();
 };
 
 class FlappyQuestScene extends Phaser.Scene {
   constructor() {
     super("FlappyQuestScene");
     this.pipes = [];
+    this.coinPickups = [];
     this.status = "menu";
     this.score = 0;
+    this.runCoins = 0;
     this.levelIndex = 0;
     this.velocityY = 0;
     this.elapsed = 0;
     this.shieldUntil = 0;
+    this.shieldCharges = 0;
+    this.shrinkUntil = 0;
+    this.activeShrinkScale = 1;
     this.slowUntil = 0;
     this.lastPipeAt = 0;
     this.crashUntil = 0;
@@ -202,6 +315,7 @@ class FlappyQuestScene extends Phaser.Scene {
     }
 
     this.updatePipes(delta, pipeSpeed);
+    this.updateCoinPickups(delta, pipeSpeed);
     this.updateBirdEffects(delta);
     this.updateTrail(delta, pipeSpeed);
     this.updateWeather(delta, pipeSpeed);
@@ -222,12 +336,17 @@ class FlappyQuestScene extends Phaser.Scene {
 
   returnToMenu() {
     this.clearPipes();
+    this.clearCoinPickups();
     this.status = "menu";
     this.score = 0;
+    this.runCoins = 0;
     this.levelIndex = 0;
     this.velocityY = 0;
     this.elapsed = 0;
     this.shieldUntil = 0;
+    this.shieldCharges = 0;
+    this.shrinkUntil = 0;
+    this.activeShrinkScale = 1;
     this.slowUntil = 0;
     this.crashUntil = 0;
     this.flapLiftUntil = 0;
@@ -315,6 +434,8 @@ class FlappyQuestScene extends Phaser.Scene {
     const { width, height } = this.scale;
     this.bird = this.add.container(width * 0.32, height * 0.48);
     this.birdBody = this.add.ellipse(0, 0, toRenderValue(46), toRenderValue(36), 0xffffff);
+    this.droneBody = this.add.rectangle(0, 0, toRenderValue(44), toRenderValue(24), 0xffffff, 0);
+    this.rocketNose = this.add.triangle(toRenderValue(26), 0, 0, toRenderValue(-11), toRenderValue(18), 0, 0, toRenderValue(11), 0xffffff, 0);
     this.wing = this.add.triangle(
       toRenderValue(-4),
       toRenderValue(3),
@@ -327,10 +448,30 @@ class FlappyQuestScene extends Phaser.Scene {
       0xffffff
     );
     this.scarf = this.add.rectangle(toRenderValue(-18), toRenderValue(-15), toRenderValue(22), toRenderValue(6), 0xffffff);
-    const eye = this.add.circle(toRenderValue(14), toRenderValue(-7), toRenderValue(4), 0x0b1921);
-    const beak = this.add.triangle(toRenderValue(28), 0, 0, 0, toRenderValue(18), toRenderValue(7), 0, toRenderValue(14), 0xf6d365);
+    this.eye = this.add.circle(toRenderValue(14), toRenderValue(-7), toRenderValue(4), 0x0b1921);
+    this.droneRotorLeft = this.add.circle(toRenderValue(-22), toRenderValue(-16), toRenderValue(8), 0xffffff, 0);
+    this.droneRotorRight = this.add.circle(toRenderValue(22), toRenderValue(-16), toRenderValue(8), 0xffffff, 0);
+    this.butterflyWingLeft = this.add.ellipse(toRenderValue(-12), toRenderValue(-5), toRenderValue(26), toRenderValue(34), 0xffffff, 0);
+    this.butterflyWingRight = this.add.ellipse(toRenderValue(10), toRenderValue(-5), toRenderValue(26), toRenderValue(34), 0xffffff, 0);
+    this.beak = this.add.triangle(toRenderValue(28), 0, 0, 0, toRenderValue(18), toRenderValue(7), 0, toRenderValue(14), 0xf6d365);
+    this.topper = this.add.triangle(toRenderValue(-8), toRenderValue(-19), 0, toRenderValue(10), toRenderValue(15), 0, toRenderValue(-10), 0, 0xffffff, 0);
+    this.jetNozzle = this.add.rectangle(toRenderValue(-28), toRenderValue(4), toRenderValue(8), toRenderValue(12), 0xffffff, 0);
 
-    this.bird.add([this.scarf, this.wing, this.birdBody, beak, eye]);
+    this.bird.add([
+      this.droneRotorLeft,
+      this.droneRotorRight,
+      this.butterflyWingLeft,
+      this.butterflyWingRight,
+      this.jetNozzle,
+      this.scarf,
+      this.wing,
+      this.birdBody,
+      this.droneBody,
+      this.rocketNose,
+      this.topper,
+      this.beak,
+      this.eye
+    ]);
     this.paintBird();
     this.createTrailPool();
 
@@ -392,12 +533,17 @@ class FlappyQuestScene extends Phaser.Scene {
 
   resetGame() {
     this.clearPipes();
+    this.clearCoinPickups();
     this.score = 0;
+    this.runCoins = 0;
     this.levelIndex = 0;
     this.velocityY = 0;
     this.elapsed = 0;
     this.lastPipeAt = -400;
     this.shieldUntil = 0;
+    this.shieldCharges = saveData.inventory.shieldCharges;
+    this.shrinkUntil = 0;
+    this.activeShrinkScale = 1;
     this.slowUntil = 0;
     this.crashUntil = 0;
     this.flapLiftUntil = 0;
@@ -445,6 +591,7 @@ class FlappyQuestScene extends Phaser.Scene {
     const theme = this.currentTheme();
     const top = this.createGateSegment(width + pipeWidth, topHeight / 2, pipeWidth, topHeight, theme, true);
     const bottom = this.createGateSegment(width + pipeWidth, bottomY + bottomHeight / 2, pipeWidth, bottomHeight, theme, false);
+    const coin = Phaser.Math.FloatBetween(0, 1) < COIN_CHANCE ? this.createCoinPickup(width + pipeWidth, gapCenter, level, topHeight, bottomY) : null;
 
     if (level.movingGates) {
       const offset = Phaser.Math.Between(toRenderValue(12), toRenderValue(32));
@@ -458,7 +605,28 @@ class FlappyQuestScene extends Phaser.Scene {
       });
     }
 
-    this.pipes.push({ top, bottom, scored: false });
+    this.pipes.push({ top, bottom, coin, scored: false });
+  }
+
+  createCoinPickup(x, gapCenter, level, topHeight, bottomY) {
+    const value = Phaser.Utils.Array.GetRandom(COIN_VALUES);
+    const lane = Phaser.Utils.Array.GetRandom([-0.42, -0.26, 0.24, 0.42]);
+    const yOffset = level.pipeGap * lane + Phaser.Math.Between(toRenderValue(-12), toRenderValue(12));
+    const y = Phaser.Math.Clamp(
+      gapCenter + yOffset,
+      topHeight + toRenderValue(28),
+      bottomY - toRenderValue(28)
+    );
+    const xOffset = Phaser.Utils.Array.GetRandom([toRenderValue(-34), toRenderValue(22), toRenderValue(48)]);
+    const coin = this.add.container(x + xOffset, y).setDepth(4);
+    const halo = this.add.circle(0, 0, toRenderValue(13), 0xfff0a6, 0.16);
+    const body = this.add.circle(0, 0, toRenderValue(8), 0xf6d365, 0.95);
+    const shine = this.add.rectangle(toRenderValue(-2), 0, toRenderValue(3), toRenderValue(14), 0xffffff, 0.45);
+    coin.add([halo, body, shine]);
+    coin.value = value;
+    coin.collected = false;
+    this.coinPickups.push(coin);
+    return coin;
   }
 
   createGateSegment(x, y, width, height, theme, isTop) {
@@ -505,21 +673,64 @@ class FlappyQuestScene extends Phaser.Scene {
       const hitTop = Phaser.Geom.Intersects.RectangleToRectangle(birdBounds, this.getSegmentBounds(pair.top));
       const hitBottom = Phaser.Geom.Intersects.RectangleToRectangle(birdBounds, this.getSegmentBounds(pair.bottom));
       if (hitTop || hitBottom) {
-        if (this.elapsed > this.shieldUntil) {
+        if (!this.hasShieldProtection()) {
           this.gameOver();
           return;
         }
 
-        this.bounceFromPipe(pair, hitTop);
+        this.consumeShieldProtection(pair, hitTop);
         return;
       }
 
       if (pair.top.x < toRenderValue(-90)) {
         pair.top.destroy();
         pair.bottom.destroy();
+        if (pair.coin?.active) pair.coin.destroy();
         this.pipes.splice(i, 1);
       }
     }
+  }
+
+  updateCoinPickups(delta, pipeSpeed) {
+    const birdBounds = this.getBirdBounds();
+    for (let i = this.coinPickups.length - 1; i >= 0; i -= 1) {
+      const coin = this.coinPickups[i];
+      if (!coin.active) {
+        this.coinPickups.splice(i, 1);
+        continue;
+      }
+
+      coin.x -= pipeSpeed * delta;
+      coin.rotation += delta * 3.8;
+      const coinBounds = new Phaser.Geom.Rectangle(coin.x - toRenderValue(15), coin.y - toRenderValue(15), toRenderValue(30), toRenderValue(30));
+      if (!coin.collected && Phaser.Geom.Intersects.RectangleToRectangle(birdBounds, coinBounds)) {
+        coin.collected = true;
+        this.collectCoin(coin);
+        this.coinPickups.splice(i, 1);
+        continue;
+      }
+
+      if (coin.x < toRenderValue(-60)) {
+        coin.destroy();
+        this.coinPickups.splice(i, 1);
+      }
+    }
+  }
+
+  collectCoin(coin) {
+    const value = coin.value ?? 10;
+    this.runCoins += value;
+    addCoinsToSave(value);
+    this.tweens.add({
+      targets: coin,
+      y: coin.y - toRenderValue(22),
+      alpha: 0,
+      scale: 1.4,
+      duration: 180,
+      ease: "Sine.easeOut",
+      onComplete: () => coin.destroy()
+    });
+    this.emitHud();
   }
 
   addScore(amount) {
@@ -588,9 +799,11 @@ class FlappyQuestScene extends Phaser.Scene {
   updateBirdEffects(delta) {
     const pulse = Phaser.Math.Clamp((this.flapPulseUntil - this.elapsed) / 86, 0, 1);
     const pulseEase = pulse * pulse;
+    const shrinkActive = this.elapsed < this.shrinkUntil;
+    this.activeShrinkScale = Phaser.Math.Linear(this.activeShrinkScale, shrinkActive ? 0.7 : 1, 1 - Math.pow(0.0005, delta));
     const blend = 1 - Math.pow(0.001, delta);
-    this.bird.scaleX = Phaser.Math.Linear(this.bird.scaleX, 1 + pulseEase * 0.11, blend);
-    this.bird.scaleY = Phaser.Math.Linear(this.bird.scaleY, 1 - pulseEase * 0.12, blend);
+    this.bird.scaleX = Phaser.Math.Linear(this.bird.scaleX, this.activeShrinkScale * (1 + pulseEase * 0.11), blend);
+    this.bird.scaleY = Phaser.Math.Linear(this.bird.scaleY, this.activeShrinkScale * (1 - pulseEase * 0.12), blend);
   }
 
   updateTrail(delta, pipeSpeed) {
@@ -602,10 +815,10 @@ class FlappyQuestScene extends Phaser.Scene {
       dot.maxLife = 0.34;
       dot.setPosition(this.bird.x - toRenderValue(24), this.bird.y + Phaser.Math.Between(toRenderValue(-9), toRenderValue(9)));
       dot.setFillStyle(skin.trail, 0.5);
-      dot.setScale(1);
-      dot.setAlpha(0.5);
+      dot.setScale(skin.style === "rocket" ? 1.35 : skin.style === "butterfly" ? 0.8 : 1);
+      dot.setAlpha(skin.style === "drone" ? 0.32 : 0.5);
       dot.setVisible(true);
-      this.nextTrailAt = this.elapsed + 48;
+      this.nextTrailAt = this.elapsed + (skin.style === "rocket" ? 34 : 48);
     }
 
     for (const dot of this.trailDots) {
@@ -618,8 +831,9 @@ class FlappyQuestScene extends Phaser.Scene {
 
       const progress = dot.life / dot.maxLife;
       dot.x -= pipeSpeed * delta * 0.48;
-      dot.setAlpha(0.5 * progress);
-      dot.setScale(0.25 + progress * 0.75);
+      dot.y += skin.style === "butterfly" ? Math.sin(progress * Math.PI * 3) * toRenderValue(0.8) : 0;
+      dot.setAlpha((skin.style === "drone" ? 0.32 : 0.5) * progress);
+      dot.setScale((skin.style === "rocket" ? 0.35 : 0.25) + progress * (skin.style === "rocket" ? 1 : 0.75));
     }
 
     const shieldActive = this.elapsed < this.shieldUntil;
@@ -627,6 +841,43 @@ class FlappyQuestScene extends Phaser.Scene {
       this.shieldStrokeActive = shieldActive;
       this.birdBody.setStrokeStyle(shieldActive ? 4 : 0, 0xf6d365, shieldActive ? 0.9 : 0);
     }
+  }
+
+  hasShieldProtection() {
+    return this.elapsed < this.shieldUntil || this.shieldCharges > 0;
+  }
+
+  consumeShieldProtection(pair, hitTop) {
+    if (this.elapsed >= this.shieldUntil && this.shieldCharges > 0) {
+      this.shieldCharges -= 1;
+      saveData.inventory.shieldCharges = Math.max(0, saveData.inventory.shieldCharges - 1);
+      writeSave();
+      updateEconomyUi();
+    }
+    this.shieldUntil = Math.max(this.shieldUntil, this.elapsed + 650);
+    this.bounceFromPipe(pair, hitTop);
+    this.emitHud();
+  }
+
+  useShrinkSkill() {
+    if (this.status !== "playing" || this.elapsed < this.shrinkUntil || saveData.inventory.shrinkUses.length === 0) return;
+
+    const duration = saveData.inventory.shrinkUses.shift();
+    writeSave();
+    updateEconomyUi();
+    this.shrinkUntil = this.elapsed + duration;
+    this.rewardPopText.setText(`缩小 ${Math.round(duration / 1000)} 秒`);
+    this.rewardPopText.setPosition(this.scale.width / 2, toRenderValue(154));
+    this.rewardPopText.setAlpha(1);
+    this.tweens.killTweensOf(this.rewardPopText);
+    this.tweens.add({
+      targets: this.rewardPopText,
+      alpha: 0,
+      delay: 900,
+      duration: 260,
+      ease: "Sine.easeIn"
+    });
+    this.emitHud();
   }
 
   unlockWeatherIfReady() {
@@ -747,26 +998,48 @@ class FlappyQuestScene extends Phaser.Scene {
     this.weatherGraphics.clear();
     if (!active) return;
 
-    this.tornadoPhase += delta * 4.6;
-    const baseX = this.scale.width * 0.72 + Math.sin(this.tornadoPhase * 0.55) * toRenderValue(42);
-    const baseY = this.scale.height - toRenderValue(96);
-    this.weatherGraphics.lineStyle(toRenderValue(3), 0xd7f5ff, 0.46);
-    for (let i = 0; i < 7; i += 1) {
-      const t = i / 6;
-      const y = baseY - t * toRenderValue(210);
-      const width = toRenderValue(26 + t * 88 + Math.sin(this.tornadoPhase + i) * 9);
-      const x = baseX + Math.sin(this.tornadoPhase + i * 0.75) * toRenderValue(12);
-      this.weatherGraphics.strokeEllipse(x, y, width, toRenderValue(13 + t * 12));
+    this.tornadoPhase += delta * 5.2;
+    const baseX = this.scale.width * 0.74 + Math.sin(this.tornadoPhase * 0.42) * toRenderValue(34);
+    const baseY = this.scale.height - toRenderValue(82);
+    this.weatherGraphics.fillStyle(0xc9f4ff, 0.08);
+    this.weatherGraphics.fillCircle(baseX, baseY + toRenderValue(12), toRenderValue(64));
+
+    for (let i = 0; i < 11; i += 1) {
+      const t = i / 10;
+      const y = baseY - t * toRenderValue(250);
+      const radius = toRenderValue(18 + (1 - t) * 58);
+      const twist = this.tornadoPhase + i * 0.72;
+      const x = baseX + Math.sin(twist) * radius * 0.34;
+      const alpha = 0.42 - t * 0.22;
+      this.weatherGraphics.lineStyle(toRenderValue(4 - t * 1.8), 0xd7f5ff, alpha);
+      this.weatherGraphics.beginPath();
+      this.weatherGraphics.arc(x, y, radius, twist, twist + Math.PI * 1.15, false);
+      this.weatherGraphics.strokePath();
+    }
+
+    this.weatherGraphics.fillStyle(0xead9b2, 0.16);
+    for (let i = 0; i < 8; i += 1) {
+      const dustX = baseX + Math.sin(this.tornadoPhase + i) * toRenderValue(50 + i * 4);
+      const dustY = baseY + Math.cos(this.tornadoPhase * 0.8 + i) * toRenderValue(10);
+      this.weatherGraphics.fillCircle(dustX, dustY, toRenderValue(3 + (i % 3)));
     }
   }
 
   checkBounds() {
     if (this.bird.y < toRenderValue(34) || this.bird.y > this.scale.height - toRenderValue(74)) {
-      if (this.elapsed > this.shieldUntil) {
+      if (!this.hasShieldProtection()) {
         this.gameOver();
       } else {
+        if (this.elapsed >= this.shieldUntil && this.shieldCharges > 0) {
+          this.shieldCharges -= 1;
+          saveData.inventory.shieldCharges = Math.max(0, saveData.inventory.shieldCharges - 1);
+          writeSave();
+          updateEconomyUi();
+        }
+        this.shieldUntil = Math.max(this.shieldUntil, this.elapsed + 650);
         this.bird.y = Phaser.Math.Clamp(this.bird.y, toRenderValue(38), this.scale.height - toRenderValue(80));
         this.velocityY *= -0.25;
+        this.emitHud();
       }
     }
   }
@@ -775,6 +1048,7 @@ class FlappyQuestScene extends Phaser.Scene {
     if (this.status === "gameover") return;
 
     this.status = "gameover";
+    updateBestScore(this.score);
     this.cameras.main.shake(180, 0.008);
     this.tweens.killTweensOf(this.bird);
     this.tweens.add({
@@ -790,6 +1064,7 @@ class FlappyQuestScene extends Phaser.Scene {
 
   completeGame() {
     this.status = "complete";
+    updateBestScore(this.score);
     rewardTextEl.textContent = "通关完成：获得天穹完赛徽章";
     setStatusCopy(this.status);
     this.emitHud();
@@ -843,11 +1118,27 @@ class FlappyQuestScene extends Phaser.Scene {
   }
 
   paintBird() {
-    if (!this.birdBody || !this.wing || !this.scarf) return;
+    if (!this.birdBody || !this.wing || !this.scarf || !this.beak) return;
     const skin = SKINS[selectedSkin];
-    this.birdBody.setFillStyle(skin.body);
-    this.wing.setFillStyle(skin.wing);
-    this.scarf.setFillStyle(skin.bodyDark);
+    const isDrone = skin.style === "drone";
+    const isButterfly = skin.style === "butterfly";
+    const isRocket = skin.style === "rocket";
+
+    this.birdBody.setFillStyle(skin.body, isDrone || isRocket ? 0 : 1);
+    this.birdBody.setScale(skin.style === "glider" ? 1.12 : 1, 1);
+    this.droneBody.setFillStyle(skin.body, isDrone ? 0.96 : 0);
+    this.rocketNose.setFillStyle(skin.body, isRocket ? 0.96 : 0);
+    this.wing.setFillStyle(skin.wing, isDrone || isButterfly || isRocket ? 0 : 1);
+    this.wing.setScale(skin.style === "glider" ? 1.22 : 1, 1);
+    this.scarf.setFillStyle(skin.bodyDark, isButterfly || isDrone ? 0 : 1);
+    this.beak.setFillStyle(skin.beak, isDrone || isButterfly || isRocket ? 0 : 1);
+    this.eye.setFillStyle(0x0b1921, isDrone || isButterfly || isRocket ? 0 : 1);
+    this.topper.setFillStyle(skin.bodyDark, skin.style === "racer" ? 0.95 : 0);
+    this.jetNozzle.setFillStyle(skin.bodyDark, isRocket ? 0.95 : 0);
+    this.droneRotorLeft.setFillStyle(skin.bodyDark, isDrone ? 0.9 : 0);
+    this.droneRotorRight.setFillStyle(skin.bodyDark, isDrone ? 0.9 : 0);
+    this.butterflyWingLeft.setFillStyle(skin.wing, isButterfly ? 0.82 : 0);
+    this.butterflyWingRight.setFillStyle(skin.body, isButterfly ? 0.88 : 0);
   }
 
   resetBirdVisuals() {
@@ -881,7 +1172,10 @@ class FlappyQuestScene extends Phaser.Scene {
   }
 
   getBirdBounds() {
-    return new Phaser.Geom.Rectangle(this.bird.x - toRenderValue(19), this.bird.y - toRenderValue(15), toRenderValue(38), toRenderValue(30));
+    const scale = this.activeShrinkScale || 1;
+    const width = toRenderValue(38) * scale;
+    const height = toRenderValue(30) * scale;
+    return new Phaser.Geom.Rectangle(this.bird.x - width / 2, this.bird.y - height / 2, width, height);
   }
 
   getSegmentBounds(segment) {
@@ -892,8 +1186,16 @@ class FlappyQuestScene extends Phaser.Scene {
     this.pipes.forEach((pair) => {
       pair.top.destroy();
       pair.bottom.destroy();
+      if (pair.coin?.active) pair.coin.destroy();
     });
     this.pipes = [];
+  }
+
+  clearCoinPickups() {
+    this.coinPickups.forEach((coin) => {
+      if (coin.active) coin.destroy();
+    });
+    this.coinPickups = [];
   }
 }
 
@@ -934,6 +1236,11 @@ const getScene = () => scene || game.scene.getScene("FlappyQuestScene");
 window.addEventListener(
   "keydown",
   (event) => {
+    if (event.code === "KeyG" && event.shiftKey) {
+      grantLocalTestCoins();
+      return;
+    }
+
     if (event.code !== "Space") return;
     const current = getScene();
     if (current?.status !== "playing") return;
@@ -971,4 +1278,21 @@ skinButtons.forEach((button) => {
   });
 });
 
+shopButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const bought = buyUpgrade(button.dataset.item, button.dataset.tier);
+    if (!bought) return;
+    const current = getScene();
+    if (current?.status === "playing") {
+      current.shieldCharges = saveData.inventory.shieldCharges;
+      current.emitHud();
+    }
+  });
+});
+
+shrinkSkillButton.addEventListener("click", () => {
+  getScene().useShrinkSkill();
+});
+
+updateEconomyUi();
 setStatusCopy("menu");

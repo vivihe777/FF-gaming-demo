@@ -55,9 +55,9 @@ canvas {
   top: max(14px, env(safe-area-inset-top));
   left: 50%;
   display: grid;
-  grid-template-columns: minmax(72px, 92px) minmax(88px, 116px) minmax(180px, 360px) 44px;
+  grid-template-columns: minmax(72px, 92px) minmax(72px, 92px) minmax(88px, 116px) minmax(180px, 360px) 44px;
   gap: 10px;
-  width: min(calc(100vw - 24px), 720px);
+  width: min(calc(100vw - 24px), 820px);
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -188,6 +188,8 @@ h1 {
 .skin-selector {
   display: grid;
   gap: 8px;
+  max-height: 170px;
+  overflow-y: auto;
 }
 
 .skin-option {
@@ -229,6 +231,116 @@ h1 {
   background: linear-gradient(135deg, #d9e4ff, #7657ff);
 }
 
+.skin-swatch.raven {
+  background: linear-gradient(135deg, #111827, #8ee5c0);
+}
+
+.skin-swatch.petal {
+  background: linear-gradient(135deg, #ffe0ec, #ff6fae);
+}
+
+.skin-swatch.comet {
+  background: linear-gradient(135deg, #6ee7ff, #ff8a3d);
+}
+
+.wallet-panel,
+.upgrade-panel {
+  display: grid;
+  gap: 8px;
+}
+
+.wallet-panel {
+  grid-template-columns: 1fr 1fr;
+}
+
+.wallet-panel > div,
+.upgrade-row {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.wallet-panel > div {
+  min-height: 48px;
+  padding: 8px 10px;
+}
+
+.wallet-panel span,
+.upgrade-row span {
+  display: block;
+  color: rgba(246, 251, 247, 0.72);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wallet-panel strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.upgrade-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(3, minmax(54px, auto));
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 7px;
+}
+
+.shop-button {
+  min-height: 30px;
+  padding: 0 8px;
+  border-radius: 6px;
+  color: #09211a;
+  background: #f6d365;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.shop-button:disabled {
+  color: rgba(246, 251, 247, 0.44);
+  background: rgba(255, 255, 255, 0.1);
+  cursor: not-allowed;
+}
+
+.skill-button {
+  position: absolute;
+  z-index: 6;
+  right: max(16px, env(safe-area-inset-right));
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  transform: translateY(-50%);
+  border: 1px solid rgba(142, 229, 192, 0.5);
+  border-radius: 50%;
+  color: #f6fbf7;
+  background: rgba(5, 16, 19, 0.82);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+  cursor: pointer;
+}
+
+.skill-button span {
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.skill-button strong {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.skill-button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
 .reward-text {
   min-height: 42px;
   padding: 10px 12px;
@@ -267,7 +379,7 @@ h1 {
 
 @media (max-width: 620px) {
   .hud {
-    grid-template-columns: 1fr 1fr 44px;
+    grid-template-columns: 1fr 1fr 1fr 44px;
     width: calc(100vw - 18px);
   }
 
@@ -301,6 +413,16 @@ h1 {
 
   .menu-actions {
     grid-template-columns: 1fr;
+  }
+
+  .upgrade-row {
+    grid-template-columns: 1fr repeat(3, minmax(48px, auto));
+  }
+
+  .skill-button {
+    right: 12px;
+    width: 60px;
+    height: 60px;
   }
 
   h1 {
